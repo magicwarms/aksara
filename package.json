@@ -1,0 +1,32 @@
+{
+  "name": "aksara",
+  "version": "1.0.0",
+  "description": "automate copywriter",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magicwarms/aksara.git"
+  },
+  "keywords": [
+    "copywrite",
+    "aksara",
+    "automate",
+    "copywrite",
+    "copywriting",
+    "nodejs",
+    "expressjs",
+    "typescript"
+  ],
+  "author": "Andhana Utama",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/magicwarms/aksara/issues"
+  },
+  "homepage": "https://github.com/magicwarms/aksara#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
