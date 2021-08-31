@@ -7,6 +7,8 @@ import cors from "cors";
 import helmet from "helmet";
 import cluster from "cluster";
 import os from "os";
+import "reflect-metadata";
+import { createConnection } from "typeorm";
 
 // import { rateLimiter, speedLimiter } from "./utilities/rateSpeedLimiter";
 
@@ -121,7 +123,7 @@ const startServer = () => {
 function startServerCluster() {
     console.info("Production/Staging server mode started!");
     // Activate cluster for production mode
-    if (cluster.isMaster) {
+    if (cluster.isPrimary) {
         console.info(`Master ${process.pid} is running`);
         for (let i = 0; i < numCPUS; i += 1) {
             cluster.fork();
@@ -149,10 +151,18 @@ function startServerDevelopment() {
 }
 
 /**
- * Start server
+ * Setup database connection here
  */
-if (process.env.NODE_ENV === "development") {
-    startServerDevelopment();
-} else {
-    startServerCluster();
-}
+createConnection()
+    .then(() => {
+        console.log("Connected to the database");
+        /**
+         * Start server
+         */
+        if (process.env.NODE_ENV === "development") {
+            startServerDevelopment();
+        } else {
+            startServerCluster();
+        }
+    })
+    .catch(() => new Error("Unable to connect to the database"));
