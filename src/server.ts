@@ -10,7 +10,8 @@ import os from "os";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 
-// import { rateLimiter, speedLimiter } from "./utilities/rateSpeedLimiter";
+import { rateLimiter, speedLimiter } from "./utilities/rateSpeedLimiter";
+import userRouter from "./users/user.router";
 
 dotenv.config();
 
@@ -48,7 +49,8 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use("/api/v1", rateLimiter, speedLimiter, routes);
+app.use("/api/v1", rateLimiter, speedLimiter, userRouter);
+
 app.get("/", (_req: Request, res: Response) =>
     res.status(200).json({
         success: true,
@@ -120,8 +122,8 @@ const startServer = () => {
 /**
  * Setup server connection here
  */
-function startServerCluster() {
-    console.info("Production/Staging server mode started!");
+const startServerCluster = async () => {
+    console.info("Production server mode started!");
     // Activate cluster for production mode
     if (cluster.isPrimary) {
         console.info(`Master ${process.pid} is running`);
@@ -136,33 +138,30 @@ function startServerCluster() {
             }
         });
     } else {
+        await createConnection();
         startServer()
             .then()
             .catch((err) => console.error(err));
     }
-}
+};
 
-function startServerDevelopment() {
+const startServerDevelopment = async () => {
     console.info("Development server mode started!");
+    await createConnection();
     // activate if development mode
     startServer()
         .then()
         .catch((err) => console.error(err));
-}
+};
 
 /**
  * Setup database connection here
  */
-createConnection()
-    .then(() => {
-        console.log("Connected to the database");
-        /**
-         * Start server
-         */
-        if (process.env.NODE_ENV === "development") {
-            startServerDevelopment();
-        } else {
-            startServerCluster();
-        }
-    })
-    .catch(() => new Error("Unable to connect to the database"));
+/**
+ * Start server
+ */
+if (process.env.NODE_ENV === "development") {
+    startServerDevelopment();
+} else {
+    startServerCluster();
+}
