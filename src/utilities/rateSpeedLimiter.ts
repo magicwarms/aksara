@@ -5,7 +5,7 @@ import slowDown from "express-slow-down";
 
 const rateLimiter = rateLimit({
     windowMs: 30 * 1000,
-    max: 10,
+    max: 12,
     handler: (_req: Request, res: Response) => {
         return res.status(429).json({
             success: false,
@@ -20,7 +20,7 @@ const rateLimiter = rateLimit({
 // Pada endpoint api yang sama
 const speedLimiter = slowDown({
     windowMs: 30 * 1000,
-    delayAfter: 5,
+    delayAfter: 6,
     delayMs: 250,
 });
 

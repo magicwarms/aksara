@@ -11,7 +11,7 @@ import "reflect-metadata";
 import { createConnection } from "typeorm";
 
 import { rateLimiter, speedLimiter } from "./utilities/rateSpeedLimiter";
-import userRouter from "./users/user.router";
+import router from "./routes";
 
 dotenv.config();
 
@@ -49,7 +49,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1", rateLimiter, speedLimiter, userRouter);
+app.use("/api/v1", rateLimiter, speedLimiter, router);
 
 app.get("/", (_req: Request, res: Response) =>
     res.status(200).json({

@@ -1,34 +1,25 @@
 /**
  * Required External Modules and Interfaces
  */
-import express, { Request, Response } from "express";
+import express from "express";
 import * as UserController from "./user.controller";
 /**
- * Router Definition2
+ * Router Definition
  */
 const userRouter = express.Router();
 /**
  * Controller Definitions
  */
-userRouter.get("/whoami", (_req: Request, res: Response) => {
-    try {
-        return res
-            .status(200)
-            .json({ success: true, data: "This is a user services", message: "This services running well" });
-    } catch (err) {
-        console.log(err);
-    }
-});
 
 // GET user
-userRouter.get("/user", UserController.findAllUser);
+userRouter.get("/", UserController.findAllUser);
 // GET user/get?id=
-userRouter.get("/user/get", UserController.findUser);
+userRouter.get("/get", UserController.findUser);
 // POST user
-userRouter.post("/user/update-store", UserController.updateOrStoreUser);
+userRouter.post("/update-store", UserController.updateOrStoreUser);
 // DELETE user
-userRouter.delete("/user/delete", UserController.deleteUser);
+userRouter.delete("/delete", UserController.deleteUser);
 // POST change password user
-userRouter.post("/user/change-password", UserController.changePasswordUser);
+userRouter.post("/change-password", UserController.changePasswordUser);
 
 export default userRouter;
