@@ -106,3 +106,5 @@ dist
 build
 # orm config file
 ormconfig.env
+# temp folder
+temp
