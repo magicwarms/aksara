@@ -116,8 +116,8 @@ export const convertCsvToJsonLine = async (data: any): Promise<any> => {
 
         return true;
     } catch (err) {
-        logger.error(err);
-        throw new Error(err);
+        logger.error(err.response.data);
+        throw new Error(err.response.data);
     } finally {
         fs.unlink("temp/" + data.file.filename, (err) => {
             if (err) logger.error(err);

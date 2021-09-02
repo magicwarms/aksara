@@ -48,7 +48,7 @@ export const listUploadedOpenAIFile = async (_req: Request, res: Response, next:
             message: "Uploaded files found!",
         });
     } catch (err) {
-        logger.error(err);
+        logger.error(err.response.data);
         next(err);
     }
 };
@@ -62,7 +62,7 @@ export const listFineTuneOpenAI = async (_req: Request, res: Response, next: Nex
             message: "List Fine tunes found!",
         });
     } catch (err) {
-        logger.error(err);
+        logger.error(err.response.data);
         next(err);
     }
 };
@@ -85,7 +85,7 @@ export const deleteFinetuneOpenAI = async (req: Request, res: Response, next: Ne
             message: "Fine tune has been deleted",
         });
     } catch (err) {
-        logger.error(err);
+        logger.error(err.response.data);
         next(err);
     }
 };
