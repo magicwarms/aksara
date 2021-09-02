@@ -55,7 +55,7 @@ app.get("/", (_req: Request, res: Response) =>
     res.status(200).json({
         success: true,
         data: {},
-        message: "Hello world",
+        message: "Hello Aksara",
     })
 );
 
