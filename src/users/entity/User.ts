@@ -6,25 +6,45 @@ import {
     UpdateDateColumn,
     DeleteDateColumn,
     Index,
+    Unique,
 } from "typeorm";
 
-import { Length, IsEmail } from "class-validator";
+import { Length, IsEmail, IsUrl } from "class-validator";
 
 @Entity()
-@Index(["email"])
+@Index(["id", "email"])
+@Unique(["email"])
 export class User {
     @PrimaryGeneratedColumn("uuid")
-    id!: string;
+    id?: string;
 
-    @Column({ type: "varchar", width: 50 })
-    @IsEmail(undefined, { message: "Email not valid" })
+    @Column({ type: "varchar", width: 50, nullable: false })
+    @IsEmail(undefined, { message: "Email tidak valid" })
     email!: string;
 
-    @Column({ type: "varchar", width: 150, select: false })
-    @Length(6, 150, {
-        message: "Password is too short. Minimal length is $constraint1 characters",
+    @Column({ type: "varchar", width: 150, nullable: false })
+    @Length(2, 150, {
+        message: "Nama depan terlalu pendek. Minimal $constraint1 karakter",
     })
-    password!: string;
+    firstname!: string;
+
+    @Column({ type: "varchar", width: 150, nullable: false })
+    @Length(2, 150, {
+        message: "Nama belakang terlalu pendek. Minimal $constraint1 karakter",
+    })
+    lastname!: string;
+
+    @Column({ type: "varchar", nullable: false })
+    @IsUrl(undefined, {
+        message: "Profile foto harus berbentuk url",
+    })
+    profilePicture!: string;
+
+    @Column({ type: "varchar", width: 30, nullable: false })
+    @Length(2, 30, {
+        message: "Negara terlalu pendek. Minimal $constraint1 karakter",
+    })
+    country!: string;
 
     @CreateDateColumn({ type: "timestamp with time zone" })
     createdDate?: Date;

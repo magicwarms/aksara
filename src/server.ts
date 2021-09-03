@@ -68,8 +68,14 @@ app.use((_req: Request, res: Response) => {
     });
 });
 // handle 500 Any error
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    console.error(err);
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    if (err.detail) {
+        return res.status(422).json({
+            success: false,
+            data: err.detail,
+            message: `Validation error`,
+        });
+    }
     return res.status(500).json({
         success: false,
         data: {},

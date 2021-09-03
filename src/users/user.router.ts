@@ -19,7 +19,5 @@ userRouter.get("/get", UserController.findUser);
 userRouter.post("/update-store", UserController.updateOrStoreUser);
 // DELETE user
 userRouter.delete("/delete", UserController.deleteUser);
-// POST change password user
-userRouter.post("/change-password", UserController.changePasswordUser);
 
 export default userRouter;
