@@ -3,6 +3,7 @@ import fs from "fs";
 import FormData from "form-data";
 import axios from "axios";
 
+import { deleteFile } from "../utilities/file";
 import logger from "../config/logger";
 
 const API_LINK_OPENAI = "https://api.openai.com/v1/files";
@@ -83,44 +84,71 @@ export const deleteFinetune = async (finetuneId: string) => {
     return deleteFinetune.data;
 };
 
+export const getDetailFinetune = async (finetuneId: string) => {
+    const detailFinetune = await axios({
+        method: "get",
+        url: `https://api.openai.com/v1/fine-tunes/${finetuneId}`,
+        headers: {
+            Authorization: `Bearer ${process.env.OPENAI_KEY}`,
+        },
+    });
+    return detailFinetune.data;
+};
+
 /**
  * Service Methods
  */
 export const convertCsvToJsonLine = async (data: any): Promise<any> => {
     try {
-        let csvFilePath = data.file.path;
-        const convertStart = await csvtojson({ ignoreColumns: /(sentiment)/ }).fromFile(csvFilePath);
-        if (!convertStart) return false;
-        const jsonData = convertStart.map((item) => {
-            return {
-                prompt: `${item.prompt}\n\n###\n\n`,
-                completion: ` ${item.completion}`,
-            };
-        });
-        const jsonLineFilename = data.file.filename.replace(".csv", ".jsonl");
-        const jsonLinePath = process.cwd() + `/temp/${jsonLineFilename}`;
+        let jsonLineFilename: string = data.file.filename;
+        if (data.body.isCSV) {
+            let csvFilePath: string = data.file.path;
+            const convertStart = await csvtojson({ ignoreColumns: /(sentiment)/ }).fromFile(csvFilePath);
+            if (!convertStart) return false;
+            const jsonData = convertStart.map((item) => {
+                return {
+                    prompt: `${item.prompt}\n\n###\n\n`,
+                    completion: ` ${item.completion}`,
+                };
+            });
+            jsonLineFilename = data.file.filename.replace(".csv", ".jsonl");
+            const jsonLinePath = process.cwd() + `/temp/${jsonLineFilename}`;
 
-        for (const itemObject of jsonData) {
-            await fs.promises.appendFile(jsonLinePath, JSON.stringify(itemObject) + "\n");
+            for (const itemObject of jsonData) {
+                await fs.promises.appendFile(jsonLinePath, JSON.stringify(itemObject) + "\n");
+            }
         }
-
         const startUploadFiles = await uploadFileToOpenAI(jsonLineFilename, "fine-tune");
         if (!startUploadFiles) return false;
 
-        fs.unlink("temp/" + jsonLineFilename, (err) => {
-            if (err) logger.error(err);
-        });
+        deleteFile("temp/" + jsonLineFilename);
 
         const startCreateFineTune = await createFineTuneToOpenAI(startUploadFiles.data.id, "babbage", 0.4, 1);
         if (!startCreateFineTune) return false;
 
         return true;
     } catch (err) {
-        logger.error(err.response.data);
-        throw new Error(err.response.data);
+        logger.error(err);
     } finally {
-        fs.unlink("temp/" + data.file.filename, (err) => {
-            if (err) logger.error(err);
+        deleteFile("temp/" + data.file.filename);
+    }
+};
+
+export const reformatJson = async () => {
+    const jsonFile = process.cwd() + `/temp/idiom.json`;
+    let readFile: any = fs.readFileSync(jsonFile, "utf-8");
+    readFile = JSON.parse(readFile);
+    let jsonData: Array<{ prompt: string; completion: string }> = [];
+    for (const item of readFile.entries) {
+        jsonData.push({
+            prompt: `${item.fields.title["en-US"]}\n\n###\n\n`,
+            completion: ` ${item.fields.meaning["en-US"]}`,
         });
     }
+    const jsonLinePath = process.cwd() + `/temp/idiom.jsonl`;
+    for (const itemObject of jsonData) {
+        await fs.promises.appendFile(jsonLinePath, JSON.stringify(itemObject) + "\n");
+    }
+
+    return true;
 };

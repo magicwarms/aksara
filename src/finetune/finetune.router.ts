@@ -16,5 +16,8 @@ finetuneRouter.post("/convert", startUpload("csvFile"), FineTuneController.conve
 finetuneRouter.get("/uploadedfiles", FineTuneController.listUploadedOpenAIFile);
 finetuneRouter.get("/list", FineTuneController.listFineTuneOpenAI);
 finetuneRouter.delete("/delete", FineTuneController.deleteFinetuneOpenAI);
+finetuneRouter.get("/detail", FineTuneController.getDetailFinetune);
+
+finetuneRouter.get("/reformat", FineTuneController.reformatJson);
 
 export default finetuneRouter;
