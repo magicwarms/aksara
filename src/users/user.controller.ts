@@ -1,8 +1,6 @@
-import { ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";
 
 import logger from "../config/logger";
-import { User } from "./entity/User";
 import * as UserService from "./user.service";
 
 export const findAllUser = async (_req: Request, res: Response) => {
