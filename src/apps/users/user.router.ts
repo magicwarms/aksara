@@ -2,7 +2,7 @@
  * Required External Modules and Interfaces
  */
 import express from "express";
-import verifyToken from "../middlewares";
+import { verifyToken } from "../middlewares";
 import * as UserController from "./user.controller";
 /**
  * Router Definition

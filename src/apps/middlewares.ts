@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 import { JWT_SECRET } from "../config/jwtsecret";
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header("Authorization")!;
     if (isEmpty(token)) {
         return res.status(403).json({
@@ -32,5 +32,3 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
         next();
     });
 };
-
-export default verifyToken;

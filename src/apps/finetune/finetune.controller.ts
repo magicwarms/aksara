@@ -6,6 +6,13 @@ import logger from "../../config/logger";
 import * as FineTuneService from "./finetune.service";
 
 export const convert = async (req: Request, res: Response, next: NextFunction) => {
+    if (res.locals.role !== "admin") {
+        return res.status(401).json({
+            success: false,
+            data: {},
+            message: "You don't have any role permission to access this API",
+        });
+    }
     try {
         const filePath = "temp/" + req.file?.filename;
         if (req.file?.mimetype !== "text/csv" && req.file?.mimetype !== "application/octet-stream") {
@@ -43,6 +50,13 @@ export const convert = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const listUploadedOpenAIFile = async (_req: Request, res: Response, next: NextFunction) => {
+    if (res.locals.role !== "admin") {
+        return res.status(401).json({
+            success: false,
+            data: {},
+            message: "You don't have any role permission to access this API",
+        });
+    }
     try {
         const listUploadedFiles = await FineTuneService.listUploadedFiles();
         return res.status(200).json({
@@ -57,6 +71,13 @@ export const listUploadedOpenAIFile = async (_req: Request, res: Response, next:
 };
 
 export const listFineTuneOpenAI = async (_req: Request, res: Response, next: NextFunction) => {
+    if (res.locals.role !== "admin") {
+        return res.status(401).json({
+            success: false,
+            data: {},
+            message: "You don't have any role permission to access this API",
+        });
+    }
     try {
         const listFinetunes = await FineTuneService.listFinetunes();
         return res.status(200).json({
@@ -71,6 +92,13 @@ export const listFineTuneOpenAI = async (_req: Request, res: Response, next: Nex
 };
 
 export const deleteFinetuneOpenAI = async (req: Request, res: Response, next: NextFunction) => {
+    if (res.locals.role !== "admin") {
+        return res.status(401).json({
+            success: false,
+            data: {},
+            message: "You don't have any role permission to access this API",
+        });
+    }
     try {
         if (!req.query.id || typeof req.query.id === "undefined") {
             return res.status(422).json({
@@ -94,6 +122,13 @@ export const deleteFinetuneOpenAI = async (req: Request, res: Response, next: Ne
 };
 
 export const reformatJson = async (_req: Request, res: Response) => {
+    if (res.locals.role !== "admin") {
+        return res.status(401).json({
+            success: false,
+            data: {},
+            message: "You don't have any role permission to access this API",
+        });
+    }
     const data = await FineTuneService.reformatJson();
     return res.status(200).json({
         success: true,
@@ -103,6 +138,13 @@ export const reformatJson = async (_req: Request, res: Response) => {
 };
 
 export const getDetailFinetune = async (req: Request, res: Response, next: NextFunction) => {
+    if (res.locals.role !== "admin") {
+        return res.status(401).json({
+            success: false,
+            data: {},
+            message: "You don't have any role permission to access this API",
+        });
+    }
     try {
         if (!req.query.id || typeof req.query.id === "undefined") {
             return res.status(422).json({
