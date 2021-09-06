@@ -7,7 +7,12 @@ const cacheDuration = 300000;
  */
 
 export const getAllUser = async () => {
-    return await getRepository(User).find({ cache: cacheDuration });
+    return await getRepository(User).find({
+        cache: {
+            id: `alluser`,
+            milliseconds: cacheDuration,
+        },
+    });
 };
 
 export const getUserProfile = async (id: String) => {
