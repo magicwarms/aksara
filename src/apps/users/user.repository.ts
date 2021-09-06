@@ -6,11 +6,11 @@ const cacheDuration = 300000;
  * Repository Methods
  */
 
-export const findAllUser = async () => {
+export const getAllUser = async () => {
     return await getRepository(User).find({ cache: cacheDuration });
 };
 
-export const findUser = async (id: String) => {
+export const getUserProfile = async (id: String) => {
     return await getRepository(User).findOne({
         where: { id },
         cache: {
@@ -20,7 +20,9 @@ export const findUser = async (id: String) => {
     });
 };
 
-export const storeUser = async (user: User): Promise<User> => {
+export const storeOrUpdateUser = async (user: User): Promise<User> => {
+    if (user.id !== "" || typeof user.id !== undefined) getConnection().queryResultCache?.remove([`user-${user.id}`]);
+
     const storeUser = await getConnection().transaction(async (transactionalEntityManager) => {
         return await transactionalEntityManager.getRepository(User).save(user);
     });

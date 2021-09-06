@@ -17,33 +17,31 @@ import { Roles } from "./user.enum";
 /**
  * Service Methods
  */
-export const findAllUser = async (): Promise<User[]> => {
-    let getAllUser = await UserRepository.findAllUser();
+export const getAllUser = async (): Promise<User[]> => {
+    let getAllUser = await UserRepository.getAllUser();
     if (getAllUser.length < 0) getAllUser = [];
     return getAllUser;
 };
 
-export const findUser = async (id: string): Promise<User | null> => {
-    const getUser = await UserRepository.findUser(id);
+export const getUserProfile = async (id: string): Promise<User | null> => {
+    const getUser = await UserRepository.getUserProfile(id);
     return !getUser ? null : getUser;
 };
 
-// export const updateOrStoreUser = async (userData: User): Promise<User | ValidationError[]> => {
-//     const user = new User();
-//     user.id = userData.id !== "" ? userData.id : undefined;
-//     user.email = userData.email;
-//     user.firstname = userData.firstname;
-//     user.lastname = userData.lastname;
-//     user.profilePicture = userData.profilePicture;
-//     user.country = userData.country;
+export const updateUserProfile = async (userId: string, userData: User): Promise<User | ValidationError[]> => {
+    const user = new User();
+    user.id = userId;
+    user.firstname = userData.firstname;
+    user.lastname = userData.lastname;
+    user.country = userData.country;
 
-//     const validateData = await validation(user);
-//     if (validateData.length > 0) return validateData;
+    const validateData = await validation(user);
+    if (validateData.length > 0) return validateData;
 
-//     const updateOrStoreUser = await UserRepository.updateOrStoreUser(user);
+    const updateUserProfile = await UserRepository.storeOrUpdateUser(user);
 
-//     return updateOrStoreUser;
-// };
+    return updateUserProfile;
+};
 
 export const deleteUser = async (id: string) => {
     return await UserRepository.deleteUser(id);
@@ -66,7 +64,7 @@ export const loginOrRegisterCustomer = async (
         const validateData = await validation(user);
         if (validateData.length > 0) return validateData;
 
-        storeUser = await UserRepository.storeUser(user);
+        storeUser = await UserRepository.storeOrUpdateUser(user);
     }
     let userId: string = isEmpty(checkEmailExist) ? storeUser?.id! : checkEmailExist?.id!;
     let roleUser: Roles = isEmpty(checkEmailExist) ? storeUser?.role! : checkEmailExist?.role!;

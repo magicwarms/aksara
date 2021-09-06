@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwtsecret";
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.header("x-access-token")!;
+    const token = req.header("Authorization")!;
     if (isEmpty(token)) {
         return res.status(403).json({
             success: false,
@@ -13,7 +13,8 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
             message: "Token not exist",
         });
     }
-    jwt.verify(token, JWT_SECRET, { algorithms: ["HS512"] }, (err, payload) => {
+    const splitBearerToken = token.split(" ");
+    jwt.verify(splitBearerToken[1].trim(), JWT_SECRET, { algorithms: ["HS512"] }, (err, payload) => {
         if (err) {
             return res.status(500).json({
                 success: false,

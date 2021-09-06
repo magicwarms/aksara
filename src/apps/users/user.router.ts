@@ -13,13 +13,13 @@ const userRouter = express.Router();
  */
 
 // GET user
-userRouter.get("/", [verifyToken], UserController.findAllUser);
+userRouter.get("/", [verifyToken], UserController.getAllUser);
 // GET user/get?id=
-userRouter.get("/get", [verifyToken], UserController.findUser);
-// POST user
-// userRouter.post("/update-store", UserController.updateOrStoreUser);
+userRouter.get("/user-profile", [verifyToken], UserController.getUserProfile);
+// PUT user
+userRouter.put("/update-profile", [verifyToken], UserController.updateUserProfile);
 // DELETE user
-userRouter.delete("/delete", [verifyToken], UserController.deleteUser);
+// userRouter.delete("/delete", [verifyToken], UserController.deleteUser);
 // POST user login
 userRouter.post("/register-login", UserController.loginOrRegisterCustomer);
 
