@@ -3,7 +3,7 @@
  */
 import express from "express";
 
-import startUpload from "../utilities/csvfile";
+import startUpload from "../../utilities/csvfile";
 import * as FineTuneController from "./finetune.controller";
 /**
  * Router Definition

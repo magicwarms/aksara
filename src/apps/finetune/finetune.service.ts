@@ -3,8 +3,8 @@ import fs from "fs";
 import FormData from "form-data";
 import axios from "axios";
 
-import { deleteFile } from "../utilities/file";
-import logger from "../config/logger";
+import { deleteFile } from "../../utilities/file";
+import logger from "../../config/logger";
 
 const API_LINK_OPENAI = "https://api.openai.com/v1/files";
 

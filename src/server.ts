@@ -76,6 +76,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
             message: `Validation error`,
         });
     }
+    console.error(err);
     return res.status(500).json({
         success: false,
         data: {},

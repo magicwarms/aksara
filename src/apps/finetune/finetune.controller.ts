@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { deleteFile } from "../utilities/file";
+import { deleteFile } from "../../utilities/file";
 
-import logger from "../config/logger";
+import logger from "../../config/logger";
 
 import * as FineTuneService from "./finetune.service";
 

@@ -20,14 +20,19 @@ export const findUser = async (id: String) => {
     });
 };
 
-export const updateOrStoreUser = async (user: User): Promise<User> => {
-    const savedData = await getConnection().transaction(async (transactionalEntityManager) => {
-        if (user.id !== "") getConnection().queryResultCache?.remove([`user-${user.id}`]);
+export const storeUser = async (user: User): Promise<User> => {
+    const storeUser = await getConnection().transaction(async (transactionalEntityManager) => {
         return await transactionalEntityManager.getRepository(User).save(user);
     });
-    return savedData;
+    return storeUser;
 };
 
 export const deleteUser = async (id: string) => {
     return await getRepository(User).softDelete(id);
+};
+
+export const checkEmailExist = async (email: string) => {
+    return await getRepository(User).findOne({
+        where: { email },
+    });
 };
