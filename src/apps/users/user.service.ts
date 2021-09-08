@@ -13,6 +13,7 @@ import * as UserRepository from "./user.repository";
 
 import { UserAuthentification } from "./user.inteface";
 import { Roles } from "./user.enum";
+import { UpdateResult } from "typeorm";
 
 /**
  * Service Methods
@@ -43,7 +44,7 @@ export const updateUserProfile = async (userId: string, userData: User): Promise
     return updateUserProfile;
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteUser = async (id: string): Promise<UpdateResult> => {
     return await UserRepository.deleteUser(id);
 };
 

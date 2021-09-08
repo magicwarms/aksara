@@ -1,4 +1,4 @@
-import { getConnection, getRepository } from "typeorm";
+import { getConnection, getRepository, UpdateResult } from "typeorm";
 import { User } from "./entity/User";
 
 const cacheDuration = 300000;
@@ -34,7 +34,7 @@ export const storeOrUpdateUser = async (user: User): Promise<User> => {
     return storeUser;
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteUser = async (id: string): Promise<UpdateResult> => {
     return await getRepository(User).softDelete(id);
 };
 
