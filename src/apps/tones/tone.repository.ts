@@ -5,9 +5,8 @@ import { Tone } from "./entity/Tone";
  */
 
 export const getAllTone = async (isActive: boolean | null) => {
-    return await getRepository(Tone).find({
-        where: { isActive },
-    });
+    const whereQuery = isActive ? { where: { isActive } } : undefined;
+    return await getRepository(Tone).find(whereQuery);
 };
 
 export const storeOrUpdateTone = async (data: Tone) => {
