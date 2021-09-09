@@ -2,10 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
 import * as FromToService from "./fromto.service";
-
-interface queryIsActiveFromTo {
-    isActive: boolean | null;
-}
+import { queryIsActiveFromTo } from "./fromto.inteface";
 
 export const getAllFromTo = async (
     req: Request<{}, {}, {}, queryIsActiveFromTo>,

@@ -2,10 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
 import * as ToneService from "./tone.service";
-
-interface queryIsActiveTone {
-    isActive: boolean | null;
-}
+import { queryIsActiveTone } from "./tone.interface";
 
 export const getAllTone = async (req: Request<{}, {}, {}, queryIsActiveTone>, res: Response, _next: NextFunction) => {
     const isActive = req.query.isActive;
