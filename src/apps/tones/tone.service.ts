@@ -29,9 +29,9 @@ export const storeOrUpdateTone = async (toneData: Tone): Promise<Tone | Validati
     const validateData = await validation(tone);
     if (validateData.length > 0) return validateData;
 
-    const updateUserProfile = await ToneRepository.storeOrUpdateTone(tone);
+    const storeOrUpdateTone = await ToneRepository.storeOrUpdateTone(tone);
 
-    return updateUserProfile;
+    return storeOrUpdateTone;
 };
 
 export const deleteTone = async (id: string): Promise<UpdateResult> => {

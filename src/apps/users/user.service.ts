@@ -85,3 +85,7 @@ export const loginOrRegisterCustomer = async (
         id: userId,
     };
 };
+
+export const logoutUser = async (userId: string): Promise<void> => {
+    return await UserRepository.logoutUser(userId);
+};

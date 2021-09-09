@@ -43,3 +43,7 @@ export const checkEmailExist = async (email: string) => {
         where: { email },
     });
 };
+
+export const logoutUser = async (userId: string) => {
+    return await getConnection().queryResultCache?.remove([`user-${userId}`]);
+};

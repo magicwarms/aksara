@@ -93,3 +93,18 @@ export const loginOrRegisterCustomer = async (req: Request, res: Response, next:
         next(err);
     }
 };
+
+export const logoutUser = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = res.locals.userId;
+        const logoutUser = await UserService.logoutUser(userId);
+        return res.status(200).json({
+            success: true,
+            data: logoutUser,
+            message: `Log out successfull`,
+        });
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};

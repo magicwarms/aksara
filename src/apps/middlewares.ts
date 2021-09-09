@@ -32,3 +32,14 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
         next();
     });
 };
+
+export const verifyAdminAccess = (_req: Request, res: Response, next: NextFunction) => {
+    if (res.locals.role !== "admin") {
+        return res.status(403).json({
+            success: false,
+            data: {},
+            message: "You don't have enough permission to access this API",
+        });
+    }
+    next();
+};
