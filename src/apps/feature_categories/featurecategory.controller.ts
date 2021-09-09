@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
-import * as FeatureService from "./featurecategory.service";
-import { queryIsActiveFeature } from "./featurecategory.interface";
+import * as FeatureCategoryService from "./featurecategory.service";
+import { queryIsActiveFeatureCategory } from "./featurecategory.interface";
 import { isEmpty } from "lodash";
 
 export const getAllFeatureCategories = async (
-    req: Request<{}, {}, {}, queryIsActiveFeature>,
+    req: Request<{}, {}, {}, queryIsActiveFeatureCategory>,
     res: Response,
     _next: NextFunction
 ) => {
@@ -19,7 +19,7 @@ export const getAllFeatureCategories = async (
             message: `Feature ID is required`,
         });
     }
-    const featureCategoriesData = await FeatureService.getAllFeatureCategories(isActive, featureId);
+    const featureCategoriesData = await FeatureCategoryService.getAllFeatureCategories(isActive, featureId);
     return res.status(200).json({
         success: true,
         data: featureCategoriesData,
@@ -31,7 +31,7 @@ export const storeOrUpdateFeatureCategory = async (req: Request, res: Response, 
     try {
         const featureCategoryId: string = req.body.id;
         const status: string = featureCategoryId ? "updated" : "saved";
-        const storeOrUpdateFeatureCategory = await FeatureService.storeOrUpdateFeatureCategory(req.body);
+        const storeOrUpdateFeatureCategory = await FeatureCategoryService.storeOrUpdateFeatureCategory(req.body);
         if (storeOrUpdateFeatureCategory instanceof Array) {
             return res.status(422).json({
                 success: false,
@@ -60,7 +60,7 @@ export const deleteFeatureCategory = async (req: Request, res: Response, next: N
                 message: `Feature category ID is required`,
             });
         }
-        const deleteFeatureCategory = await FeatureService.deleteFeatureCategory(featureCategoryId);
+        const deleteFeatureCategory = await FeatureCategoryService.deleteFeatureCategory(featureCategoryId);
         if (!deleteFeatureCategory.affected) {
             return res.status(200).json({
                 success: true,

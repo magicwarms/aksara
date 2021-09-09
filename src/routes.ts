@@ -7,6 +7,7 @@ import fromToRouter from "./apps/fromto/fromto.router";
 import themeRouter from "./apps/themes/theme.router";
 import featureRouter from "./apps/features/feature.router";
 import featureCategoryRouter from "./apps/feature_categories/featurecategory.router";
+import featureSubCategoryRouter from "./apps/feature_subcategories/featuresubcategory.router";
 
 import { verifyToken, verifyAdminAccess } from "./apps/middlewares";
 /**
@@ -23,5 +24,6 @@ router.use("/fromto", [verifyToken, verifyAdminAccess], fromToRouter);
 router.use("/theme", [verifyToken, verifyAdminAccess], themeRouter);
 router.use("/feature", [verifyToken, verifyAdminAccess], featureRouter);
 router.use("/feature-category", [verifyToken, verifyAdminAccess], featureCategoryRouter);
+router.use("/feature-subcategory", [verifyToken, verifyAdminAccess], featureSubCategoryRouter);
 
 export default router;

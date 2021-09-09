@@ -8,16 +8,14 @@ import {
     Index,
     JoinColumn,
     ManyToOne,
-    OneToMany,
 } from "typeorm";
 
 import { Length, IsNotEmpty, IsLowercase } from "class-validator";
-import { Feature } from "../../features/entity/Feature";
-import { FeatureSubCategory } from "../../feature_subcategories/entity/FeatureSubCategory";
+import { FeatureCategory } from "../../feature_categories/entity/FeatureCategory";
 
 @Entity()
 @Index(["id"])
-export class FeatureCategory {
+export class FeatureSubCategory {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
@@ -35,17 +33,11 @@ export class FeatureCategory {
 
     @Column({ type: "varchar", nullable: false, select: false })
     @IsNotEmpty()
-    featureId!: string;
+    featureCategoryId!: string;
 
-    @ManyToOne(() => Feature)
+    @ManyToOne(() => FeatureCategory)
     @JoinColumn()
-    feature?: Feature;
-
-    @OneToMany(() => FeatureSubCategory, (feature_subcategory) => feature_subcategory.feature_category, {
-        eager: true,
-    })
-    @JoinColumn()
-    feature_subcategories?: FeatureSubCategory[];
+    feature_category?: FeatureCategory;
 
     @Column({ type: "bool", width: 1, nullable: false, default: true })
     isActive!: boolean;

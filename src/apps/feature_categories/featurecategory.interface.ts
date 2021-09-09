@@ -1,4 +1,4 @@
-export interface queryIsActiveFeature {
+export interface queryIsActiveFeatureCategory {
     isActive: boolean | null;
     featureId: string;
 }

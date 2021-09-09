@@ -5,7 +5,7 @@ import { FeatureCategory } from "./entity/FeatureCategory";
  */
 
 export const getAllFeatureCategory = async (isActive: boolean | null, featureId: string) => {
-    const whereQuery = isActive ? { where: { isActive } } : { where: { featureId } };
+    const whereQuery = isActive ? { where: { isActive, featureId } } : { where: { featureId } };
     return await getRepository(FeatureCategory).find(whereQuery);
 };
 
