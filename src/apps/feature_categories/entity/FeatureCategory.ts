@@ -6,16 +6,16 @@ import {
     UpdateDateColumn,
     DeleteDateColumn,
     Index,
-    OneToMany,
     JoinColumn,
+    ManyToOne,
 } from "typeorm";
 
 import { Length, IsNotEmpty, IsLowercase } from "class-validator";
-import { FeatureCategory } from "../../feature_categories/entity/FeatureCategory";
+import { Feature } from "../../features/entity/Feature";
 
 @Entity()
 @Index(["id"])
-export class Feature {
+export class FeatureCategory {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
@@ -31,12 +31,16 @@ export class Feature {
     @IsNotEmpty()
     name!: string;
 
+    @Column({ type: "varchar", nullable: false, select: false })
+    @IsNotEmpty()
+    featureId!: string;
+
+    @ManyToOne(() => Feature)
+    @JoinColumn()
+    feature?: Feature;
+
     @Column({ type: "bool", width: 1, nullable: false, default: true })
     isActive!: boolean;
-
-    @OneToMany(() => FeatureCategory, (feature_category) => feature_category.feature, { eager: true })
-    @JoinColumn()
-    feature_categories?: FeatureCategory[];
 
     @CreateDateColumn({ type: "timestamp with time zone" })
     createdDate?: Date;
