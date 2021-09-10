@@ -41,9 +41,7 @@ export class FeatureCategory {
     @JoinColumn()
     feature?: Feature;
 
-    @OneToMany(() => FeatureSubCategory, (feature_subcategory) => feature_subcategory.feature_category, {
-        eager: true,
-    })
+    @OneToMany(() => FeatureSubCategory, (feature_subcategory) => feature_subcategory.feature_category, { eager: true })
     @JoinColumn()
     feature_subcategories?: FeatureSubCategory[];
 
