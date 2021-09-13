@@ -12,17 +12,27 @@ import * as CompletionRepository from "./completion.repository";
  * Service Methods
  */
 export const getAllCompletion = async (userId: string): Promise<Completion[]> => {
-    let getAllCompletion = await CompletionRepository.getAllCompletion(userId);
-    if (getAllCompletion.length < 0) getAllCompletion = [];
+    let getAllCompletion: Completion[] = await CompletionRepository.getAllCompletion(userId);
+    if (getAllCompletion.length < 0) return [];
+    getAllCompletion = getAllCompletion.map((item) => {
+        return {
+            ...item,
+            count: Number(item.count),
+            tokenUsage: Number(item.tokenUsage),
+        };
+    });
     return getAllCompletion;
 };
 
-export const storeCompletion = async (completionData: Completion): Promise<Completion | ValidationError[]> => {
+export const storeCompletion = async (
+    completionData: Completion,
+    userId: string
+): Promise<Completion | ValidationError[]> => {
     const completion = new Completion();
     completion.prompt = completionData.prompt;
     completion.language = completionData.language;
     completion.results = completionData.results;
-    completion.userId = completionData.userId;
+    completion.userId = userId;
     completion.feature = completionData.feature;
     completion.tones = completionData.tones;
     completion.from = completionData.from;

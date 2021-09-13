@@ -15,7 +15,8 @@ export const getAllCompletion = async (_req: Request, res: Response, _next: Next
 
 export const storeCompletion = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const storeCompletion = await CompletionService.storeCompletion(req.body);
+        const userId: string = res.locals.userId;
+        const storeCompletion = await CompletionService.storeCompletion(req.body, userId);
         if (storeCompletion instanceof Array) {
             return res.status(422).json({
                 success: false,

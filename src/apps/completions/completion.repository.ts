@@ -5,10 +5,18 @@ import { Completion } from "./entity/Completion";
  */
 
 export const getAllCompletion = async (userId: string) => {
-    return await getRepository(Completion).find({ where: { userId } });
+    return await getRepository(Completion).find({
+        where: { userId },
+        cache: {
+            id: `usercompletion-${userId}`,
+            milliseconds: 300000,
+        },
+        relations: ["user"],
+    });
 };
 
 export const storeCompletion = async (completionData: Completion): Promise<Completion> => {
+    getConnection().queryResultCache?.remove([`usercompletion-${completionData.userId}`]);
     const storeCompletionUser = await getConnection().transaction(async (transactionalEntityManager) => {
         return await transactionalEntityManager.getRepository(Completion).save(completionData);
     });

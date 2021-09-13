@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index, JoinColumn, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index, JoinColumn, ManyToOne } from "typeorm";
 
 import { Length, IsNotEmpty } from "class-validator";
 import { featureCompletion, resultCompletion, basicDataCompletion } from "../completion.interface";
@@ -31,7 +31,7 @@ export class Completion {
     @IsNotEmpty()
     userId!: string;
 
-    @OneToOne(() => User)
+    @ManyToOne(() => User)
     @JoinColumn({ name: "userId" })
     user!: User;
 
