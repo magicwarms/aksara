@@ -5,7 +5,7 @@ import { featureCompletion, resultCompletion, basicDataCompletion } from "../com
 import { User } from "../../users/entity/User";
 
 @Entity()
-@Index(["id"])
+@Index(["id", "userId"])
 export class Completion {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
