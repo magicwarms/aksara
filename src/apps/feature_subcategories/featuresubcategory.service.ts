@@ -6,10 +6,12 @@ import isEmpty from "lodash/isEmpty";
 import { UpdateResult } from "typeorm";
 
 import validation from "../../config/validation";
+import { normalizeKey } from "../../utilities/helper";
+import { FeatureCategory } from "../feature_categories/entity/FeatureCategory";
 
 import { FeatureSubCategory } from "./entity/FeatureSubCategory";
 import * as FeatureSubCategoryRepository from "./featuresubcategory.repository";
-
+import * as FeatureCategoryRepository from "../feature_categories/featurecategory.repository";
 /**
  * Service Methods
  */
@@ -23,15 +25,21 @@ export const getAllFeatureSubCategories = async (
 };
 
 export const storeOrUpdateFeatureSubCategory = async (
-    FeatureSubCategoryData: FeatureSubCategory
+    featureSubCategoryData: FeatureSubCategory
 ): Promise<FeatureSubCategory | ValidationError[]> => {
     const featureSubCategory = new FeatureSubCategory();
-    const normalizeKey: string = FeatureSubCategoryData.name.replace(/ /g, "_");
-    featureSubCategory.id = isEmpty(FeatureSubCategoryData.id) ? undefined : FeatureSubCategoryData.id;
-    featureSubCategory.key = normalizeKey.toLowerCase();
-    featureSubCategory.name = FeatureSubCategoryData.name;
-    featureSubCategory.featureCategoryId = FeatureSubCategoryData.featureCategoryId;
-    featureSubCategory.isActive = FeatureSubCategoryData.isActive;
+    const normalizeKeyName: string = normalizeKey(featureSubCategoryData.name);
+
+    const getSubCategoryData: FeatureCategory | undefined = await FeatureCategoryRepository.getFeatureCategory(
+        featureSubCategoryData.featureCategoryId
+    );
+
+    featureSubCategory.id = isEmpty(featureSubCategoryData.id) ? undefined : featureSubCategoryData.id;
+    featureSubCategory.key = normalizeKeyName;
+    featureSubCategory.name = featureSubCategoryData.name;
+    featureSubCategory.featureCategoryId = featureSubCategoryData.featureCategoryId;
+    featureSubCategory.featureCategoryKey = getSubCategoryData?.key!;
+    featureSubCategory.isActive = featureSubCategoryData.isActive;
 
     const validateData = await validation(featureSubCategory);
     if (validateData.length > 0) return validateData;

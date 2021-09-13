@@ -9,6 +9,10 @@ export const getAllFeature = async (isActive: boolean | null) => {
     return await getRepository(Feature).find(whereQuery);
 };
 
+export const getFeature = async (featureId: string) => {
+    return await getRepository(Feature).findOne(featureId);
+};
+
 export const storeOrUpdateFeature = async (data: Feature) => {
     return await getRepository(Feature).save(data);
 };

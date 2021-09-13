@@ -11,6 +11,10 @@ export const getAllFeatureCategory = async (isActive: boolean | null, featureId:
     return await getRepository(FeatureCategory).find(whereQuery);
 };
 
+export const getFeatureCategory = async (featureCategoryId: string) => {
+    return await getRepository(FeatureCategory).findOne(featureCategoryId);
+};
+
 export const storeOrUpdateFeatureCategory = async (data: FeatureCategory) => {
     return await getRepository(FeatureCategory).save(data);
 };

@@ -31,9 +31,13 @@ export class FeatureSubCategory {
     @IsNotEmpty()
     name!: string;
 
-    @Column({ type: "varchar", nullable: false, select: false })
+    @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
     featureCategoryId!: string;
+
+    @Column({ type: "varchar", nullable: false })
+    @IsNotEmpty()
+    featureCategoryKey!: string;
 
     @ManyToOne(() => FeatureCategory)
     @JoinColumn()

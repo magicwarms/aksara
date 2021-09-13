@@ -32,7 +32,7 @@ export class Feature {
     name!: string;
 
     @Column({ type: "bool", width: 1, nullable: false, default: true })
-    isActive!: boolean;
+    isActive?: boolean;
 
     @OneToMany(() => FeatureCategory, (feature_category) => feature_category.feature, { eager: true })
     @JoinColumn()

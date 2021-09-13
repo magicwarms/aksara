@@ -9,6 +9,10 @@ import validation from "../../config/validation";
 
 import { FeatureCategory } from "./entity/FeatureCategory";
 import * as FeatureCategoryRepository from "./featurecategory.repository";
+import * as FeatureRepository from "../features/feature.repository";
+
+import { normalizeKey } from "../../utilities/helper";
+import { Feature } from "../features/entity/Feature";
 
 /**
  * Service Methods
@@ -26,11 +30,15 @@ export const storeOrUpdateFeatureCategory = async (
     FeatureCategoryData: FeatureCategory
 ): Promise<FeatureCategory | ValidationError[]> => {
     const featureCategory = new FeatureCategory();
-    const normalizeKey: string = FeatureCategoryData.name.replace(/ /g, "_");
+    const normalizeKeyName: string = normalizeKey(FeatureCategoryData.name);
+
+    const getFeatureData: Feature | undefined = await FeatureRepository.getFeature(FeatureCategoryData.featureId);
+
     featureCategory.id = isEmpty(FeatureCategoryData.id) ? undefined : FeatureCategoryData.id;
-    featureCategory.key = normalizeKey.toLowerCase();
+    featureCategory.key = normalizeKeyName;
     featureCategory.name = FeatureCategoryData.name;
     featureCategory.featureId = FeatureCategoryData.featureId;
+    featureCategory.featureKey = getFeatureData?.key!;
     featureCategory.isActive = FeatureCategoryData.isActive;
 
     const validateData = await validation(featureCategory);
