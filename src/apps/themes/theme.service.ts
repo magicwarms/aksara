@@ -6,6 +6,7 @@ import isEmpty from "lodash/isEmpty";
 import { UpdateResult } from "typeorm";
 
 import validation from "../../config/validation";
+import { normalizeKey } from "../../utilities/helper";
 
 import { Theme } from "./entity/Theme";
 import * as ThemeRepository from "./theme.repository";
@@ -22,7 +23,7 @@ export const getAllTheme = async (isActive: boolean | null): Promise<Theme[]> =>
 export const storeOrUpdateTheme = async (themeData: Theme): Promise<Theme | ValidationError[]> => {
     const theme = new Theme();
     theme.id = isEmpty(themeData.id) ? undefined : themeData.id;
-    theme.key = themeData.name.toLowerCase();
+    theme.key = { id: normalizeKey(themeData.name.id), us: normalizeKey(themeData.name.us) };
     theme.name = themeData.name;
     theme.isActive = themeData.isActive;
 
