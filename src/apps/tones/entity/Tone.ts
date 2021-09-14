@@ -8,7 +8,8 @@ import {
     Index,
 } from "typeorm";
 
-import { Length, IsNotEmpty, IsLowercase } from "class-validator";
+import { IsNotEmpty } from "class-validator";
+import { toneName } from "../tone.interface";
 
 @Entity()
 @Index(["id"])
@@ -16,17 +17,13 @@ export class Tone {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
-    @Column({ type: "varchar", width: 50, nullable: false })
+    @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    @IsLowercase()
-    key!: string;
+    key!: toneName;
 
-    @Column({ type: "varchar", width: 50, nullable: false })
-    @Length(2, 50, {
-        message: "Nama terlalu pendek. Minimal $constraint1 karakter",
-    })
+    @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    name!: string;
+    name!: toneName;
 
     @Column({ type: "bool", width: 1, nullable: false, default: true })
     isActive!: boolean;

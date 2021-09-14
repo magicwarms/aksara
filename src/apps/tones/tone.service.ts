@@ -9,6 +9,7 @@ import validation from "../../config/validation";
 
 import { Tone } from "./entity/Tone";
 import * as ToneRepository from "./tone.repository";
+import { normalizeKey } from "../../utilities/helper";
 
 /**
  * Service Methods
@@ -22,7 +23,7 @@ export const getAllTone = async (isActive: boolean | null): Promise<Tone[]> => {
 export const storeOrUpdateTone = async (toneData: Tone): Promise<Tone | ValidationError[]> => {
     const tone = new Tone();
     tone.id = isEmpty(toneData.id) ? undefined : toneData.id;
-    tone.key = toneData.name.toLowerCase();
+    tone.key = { id: normalizeKey(toneData.name.id), us: normalizeKey(toneData.name.us) };
     tone.name = toneData.name;
     tone.isActive = toneData.isActive;
 
