@@ -1,4 +1,4 @@
-export interface queryIsActiveTheme {
+export interface queryFindThemeData {
     isActive: boolean | null;
 }
 

@@ -28,14 +28,16 @@ export const storeOrUpdateFeatureSubCategory = async (
     featureSubCategoryData: FeatureSubCategory
 ): Promise<FeatureSubCategory | ValidationError[]> => {
     const featureSubCategory = new FeatureSubCategory();
-    const normalizeKeyName: string = normalizeKey(featureSubCategoryData.name);
 
     const getSubCategoryData: FeatureCategory | undefined = await FeatureCategoryRepository.getFeatureCategory(
         featureSubCategoryData.featureCategoryId
     );
 
     featureSubCategory.id = isEmpty(featureSubCategoryData.id) ? undefined : featureSubCategoryData.id;
-    featureSubCategory.key = normalizeKeyName;
+    featureSubCategory.key = {
+        id: normalizeKey(featureSubCategoryData.name.id),
+        us: normalizeKey(featureSubCategoryData.name.us),
+    };
     featureSubCategory.name = featureSubCategoryData.name;
     featureSubCategory.featureCategoryId = featureSubCategoryData.featureCategoryId;
     featureSubCategory.featureCategoryKey = getSubCategoryData?.key!;

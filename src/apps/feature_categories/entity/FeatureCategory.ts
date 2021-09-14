@@ -11,9 +11,10 @@ import {
     OneToMany,
 } from "typeorm";
 
-import { Length, IsNotEmpty, IsLowercase } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 import { Feature } from "../../features/entity/Feature";
 import { FeatureSubCategory } from "../../feature_subcategories/entity/FeatureSubCategory";
+import { featureCategoryName } from "../../feature_categories/featurecategory.interface";
 
 @Entity()
 @Index(["id"])
@@ -21,25 +22,21 @@ export class FeatureCategory {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
-    @Column({ type: "varchar", width: 50, nullable: false })
+    @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    @IsLowercase()
-    key!: string;
+    key!: featureCategoryName;
 
-    @Column({ type: "varchar", width: 50, nullable: false })
-    @Length(2, 50, {
-        message: "Nama terlalu pendek. Minimal $constraint1 karakter",
-    })
+    @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    name!: string;
+    name!: featureCategoryName;
 
     @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
     featureId!: string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    featureKey!: string;
+    featureKey!: featureCategoryName;
 
     @ManyToOne(() => Feature)
     @JoinColumn()

@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
 import * as FeatureCategoryService from "./featurecategory.service";
-import { queryIsActiveFeatureCategory } from "./featurecategory.interface";
+import { queryFindFeatureCategoryData } from "./featurecategory.interface";
 import { isEmpty } from "lodash";
 
 export const getAllFeatureCategories = async (
-    req: Request<{}, {}, {}, queryIsActiveFeatureCategory>,
+    req: Request<{}, {}, {}, queryFindFeatureCategoryData>,
     res: Response,
     _next: NextFunction
 ) => {

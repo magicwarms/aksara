@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
 import * as ThemeService from "./theme.service";
-import { queryIsActiveTheme } from "./theme.interface";
+import { queryFindThemeData } from "./theme.interface";
 
-export const getAllTheme = async (req: Request<{}, {}, {}, queryIsActiveTheme>, res: Response, _next: NextFunction) => {
+export const getAllTheme = async (req: Request<{}, {}, {}, queryFindThemeData>, res: Response, _next: NextFunction) => {
     const isActive = req.query.isActive;
     const themes = await ThemeService.getAllTheme(isActive);
     return res.status(200).json({

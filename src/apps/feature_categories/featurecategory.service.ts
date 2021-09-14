@@ -30,12 +30,14 @@ export const storeOrUpdateFeatureCategory = async (
     FeatureCategoryData: FeatureCategory
 ): Promise<FeatureCategory | ValidationError[]> => {
     const featureCategory = new FeatureCategory();
-    const normalizeKeyName: string = normalizeKey(FeatureCategoryData.name);
 
     const getFeatureData: Feature | undefined = await FeatureRepository.getFeature(FeatureCategoryData.featureId);
 
     featureCategory.id = isEmpty(FeatureCategoryData.id) ? undefined : FeatureCategoryData.id;
-    featureCategory.key = normalizeKeyName;
+    featureCategory.key = {
+        id: normalizeKey(FeatureCategoryData.name.id),
+        us: normalizeKey(FeatureCategoryData.name.us),
+    };
     featureCategory.name = FeatureCategoryData.name;
     featureCategory.featureId = FeatureCategoryData.featureId;
     featureCategory.featureKey = getFeatureData?.key!;

@@ -2,10 +2,10 @@ import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
 import * as FeatureService from "./feature.service";
-import { queryIsActiveFeature } from "./feature.interface";
+import { queryFindFeatureData } from "./feature.interface";
 
 export const getAllFeature = async (
-    req: Request<{}, {}, {}, queryIsActiveFeature>,
+    req: Request<{}, {}, {}, queryFindFeatureData>,
     res: Response,
     _next: NextFunction
 ) => {

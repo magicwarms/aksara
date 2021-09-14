@@ -1,4 +1,4 @@
-export interface queryFindToneData {
+export interface queryFindFromtoData {
     isActive: boolean | null;
 }
 
