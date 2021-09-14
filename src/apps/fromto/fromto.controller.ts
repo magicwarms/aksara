@@ -2,13 +2,9 @@ import { NextFunction, Request, Response } from "express";
 
 import logger from "../../config/logger";
 import * as FromToService from "./fromto.service";
-import { queryIsActiveFromTo } from "./fromto.inteface";
+import { queryFindToneData } from "./fromto.inteface";
 
-export const getAllFromTo = async (
-    req: Request<{}, {}, {}, queryIsActiveFromTo>,
-    res: Response,
-    _next: NextFunction
-) => {
+export const getAllFromTo = async (req: Request<{}, {}, {}, queryFindToneData>, res: Response, _next: NextFunction) => {
     const isActive = req.query.isActive;
     const tones = await FromToService.getAllFromTo(isActive);
     return res.status(200).json({

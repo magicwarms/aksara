@@ -6,6 +6,7 @@ import isEmpty from "lodash/isEmpty";
 import { UpdateResult } from "typeorm";
 
 import validation from "../../config/validation";
+import { normalizeKey } from "../../utilities/helper";
 
 import { FromTo } from "./entity/FromTo";
 import * as FromToRepository from "./fromto.repository";
@@ -22,7 +23,7 @@ export const getAllFromTo = async (isActive: boolean | null): Promise<FromTo[]> 
 export const storeOrUpdateFromTo = async (fromToData: FromTo): Promise<FromTo | ValidationError[]> => {
     const fromto = new FromTo();
     fromto.id = isEmpty(fromToData.id) ? undefined : fromToData.id;
-    fromto.key = fromToData.name.toLowerCase();
+    fromto.key = { id: normalizeKey(fromToData.name.id), us: normalizeKey(fromToData.name.us) };
     fromto.name = fromToData.name;
     fromto.isActive = fromToData.isActive;
 
