@@ -4,9 +4,19 @@ import { FromTo } from "./entity/FromTo";
  * Repository Methods
  */
 
-export const getAllFromTo = async (isActive: boolean | null) => {
-    const whereQuery = isActive ? { where: { isActive } } : undefined;
-    return await getRepository(FromTo).find(whereQuery);
+export const getAllFromTo = async (isActive: boolean, categoryId: string) => {
+    return await getRepository(FromTo)
+        .createQueryBuilder("fromto")
+        .select(["fromto.id", "fromto.key", "fromto.name", "fromto.categories"])
+        .where("fromto.categories ::jsonb @> :categories", {
+            categories: JSON.stringify([
+                {
+                    id: categoryId,
+                },
+            ]),
+        })
+        .andWhere("fromto.isActive = :isActive", { isActive })
+        .getMany();
 };
 
 export const storeOrUpdateFromTo = async (data: FromTo) => {

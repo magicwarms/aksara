@@ -1,5 +1,6 @@
 export interface queryFindFromtoData {
-    isActive: boolean | null;
+    isActive: boolean;
+    category: string;
 }
 
 export interface fromtoName {

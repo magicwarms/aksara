@@ -2,6 +2,7 @@
  * Required External Modules and Interfaces
  */
 import express from "express";
+import { verifyAdminAccess } from "../middlewares";
 import * as FromToController from "./fromto.controller";
 /**
  * Router Definition
@@ -12,7 +13,7 @@ const fromToRouter = express.Router();
  */
 
 fromToRouter.get("/", FromToController.getAllFromTo);
-fromToRouter.post("/store-update", FromToController.storeOrUpdateFromTo);
-fromToRouter.delete("/delete", FromToController.deleteFromTo);
+fromToRouter.post("/store-update", [verifyAdminAccess], FromToController.storeOrUpdateFromTo);
+fromToRouter.delete("/delete", [verifyAdminAccess], FromToController.deleteFromTo);
 
 export default fromToRouter;

@@ -17,9 +17,9 @@ export class FromTo {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
-    @Column("jsonb", { nullable: false })
+    @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
-    key!: fromtoName;
+    key!: string;
 
     @Column("jsonb", { nullable: false })
     @IsNotEmpty()

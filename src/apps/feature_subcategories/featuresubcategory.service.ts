@@ -34,10 +34,7 @@ export const storeOrUpdateFeatureSubCategory = async (
     );
 
     featureSubCategory.id = isEmpty(featureSubCategoryData.id) ? undefined : featureSubCategoryData.id;
-    featureSubCategory.key = {
-        id: normalizeKey(featureSubCategoryData.name.id),
-        us: normalizeKey(featureSubCategoryData.name.us),
-    };
+    featureSubCategory.key = normalizeKey(featureSubCategoryData.name.us);
     featureSubCategory.name = featureSubCategoryData.name;
     featureSubCategory.featureCategoryId = featureSubCategoryData.featureCategoryId;
     featureSubCategory.featureCategoryKey = getSubCategoryData?.key!;

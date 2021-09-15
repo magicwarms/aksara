@@ -34,10 +34,7 @@ export const storeOrUpdateFeatureCategory = async (
     const getFeatureData: Feature | undefined = await FeatureRepository.getFeature(FeatureCategoryData.featureId);
 
     featureCategory.id = isEmpty(FeatureCategoryData.id) ? undefined : FeatureCategoryData.id;
-    featureCategory.key = {
-        id: normalizeKey(FeatureCategoryData.name.id),
-        us: normalizeKey(FeatureCategoryData.name.us),
-    };
+    featureCategory.key = normalizeKey(FeatureCategoryData.name.us);
     featureCategory.name = FeatureCategoryData.name;
     featureCategory.featureId = FeatureCategoryData.featureId;
     featureCategory.featureKey = getFeatureData?.key!;

@@ -14,8 +14,8 @@ import * as FromToRepository from "./fromto.repository";
 /**
  * Service Methods
  */
-export const getAllFromTo = async (isActive: boolean | null): Promise<FromTo[]> => {
-    let getAllFromTo = await FromToRepository.getAllFromTo(isActive);
+export const getAllFromTo = async (isActive: boolean, category: string): Promise<FromTo[]> => {
+    let getAllFromTo = await FromToRepository.getAllFromTo(isActive, category);
     if (getAllFromTo.length < 0) getAllFromTo = [];
     return getAllFromTo;
 };
@@ -23,7 +23,7 @@ export const getAllFromTo = async (isActive: boolean | null): Promise<FromTo[]> 
 export const storeOrUpdateFromTo = async (fromToData: FromTo): Promise<FromTo | ValidationError[]> => {
     const fromto = new FromTo();
     fromto.id = isEmpty(fromToData.id) ? undefined : fromToData.id;
-    fromto.key = { id: normalizeKey(fromToData.name.id), us: normalizeKey(fromToData.name.us) };
+    fromto.key = normalizeKey(fromToData.name.us);
     fromto.name = fromToData.name;
     fromto.categories = fromToData.categories;
     fromto.isActive = fromToData.isActive;

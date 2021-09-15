@@ -17,9 +17,9 @@ export class Tone {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
-    @Column("jsonb", { nullable: false })
+    @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
-    key!: toneName;
+    key!: string;
 
     @Column("jsonb", { nullable: false })
     @IsNotEmpty()

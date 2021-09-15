@@ -23,7 +23,7 @@ export const getAllFeature = async (isActive: boolean | null): Promise<Feature[]
 export const storeOrUpdateFeature = async (featureData: Feature): Promise<Feature | ValidationError[]> => {
     const feature = new Feature();
     feature.id = isEmpty(featureData.id) ? undefined : featureData.id;
-    feature.key = { id: normalizeKey(featureData.name.id), us: normalizeKey(featureData.name.us) };
+    feature.key = normalizeKey(featureData.name.us);
     feature.name = featureData.name;
     feature.isActive = featureData.isActive;
 

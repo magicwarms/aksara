@@ -20,9 +20,9 @@ export class FeatureSubCategory {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
-    @Column("jsonb", { nullable: false })
+    @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
-    key!: featureSubCategoryName;
+    key!: string;
 
     @Column("jsonb", { nullable: false })
     @IsNotEmpty()
@@ -32,9 +32,9 @@ export class FeatureSubCategory {
     @IsNotEmpty()
     featureCategoryId!: string;
 
-    @Column("jsonb", { nullable: false })
+    @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
-    featureCategoryKey!: featureSubCategoryName;
+    featureCategoryKey!: string;
 
     @ManyToOne(() => FeatureCategory)
     @JoinColumn()

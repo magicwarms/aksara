@@ -23,7 +23,7 @@ export const getAllTone = async (isActive: boolean, category: string): Promise<T
 export const storeOrUpdateTone = async (toneData: Tone): Promise<Tone | ValidationError[]> => {
     const tone = new Tone();
     tone.id = isEmpty(toneData.id) ? undefined : toneData.id;
-    tone.key = { id: normalizeKey(toneData.name.id), us: normalizeKey(toneData.name.us) };
+    tone.key = normalizeKey(toneData.name.us);
     tone.name = toneData.name;
     tone.categories = toneData.categories;
     tone.isActive = toneData.isActive;
