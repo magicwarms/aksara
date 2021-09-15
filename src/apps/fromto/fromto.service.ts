@@ -25,6 +25,7 @@ export const storeOrUpdateFromTo = async (fromToData: FromTo): Promise<FromTo | 
     fromto.id = isEmpty(fromToData.id) ? undefined : fromToData.id;
     fromto.key = { id: normalizeKey(fromToData.name.id), us: normalizeKey(fromToData.name.us) };
     fromto.name = fromToData.name;
+    fromto.categories = fromToData.categories;
     fromto.isActive = fromToData.isActive;
 
     const validateData = await validation(fromto);

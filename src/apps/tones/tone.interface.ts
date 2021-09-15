@@ -1,8 +1,13 @@
 export interface queryFindToneData {
-    isActive: boolean | null;
+    isActive: boolean;
+    category: string;
 }
 
 export interface toneName {
     us: string;
+    id: string;
+}
+
+export interface categories {
     id: string;
 }

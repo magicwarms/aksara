@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 
 import { IsNotEmpty } from "class-validator";
-import { fromtoName } from "../fromto.inteface";
+import { categories, fromtoName } from "../fromto.inteface";
 
 @Entity()
 @Index(["id"])
@@ -24,6 +24,10 @@ export class FromTo {
     @Column("jsonb", { nullable: false })
     @IsNotEmpty()
     name!: fromtoName;
+
+    @Column("jsonb", { nullable: true })
+    @IsNotEmpty()
+    categories!: categories[];
 
     @Column({ type: "bool", width: 1, nullable: false, default: true })
     isActive!: boolean;

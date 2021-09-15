@@ -6,7 +6,15 @@ import { queryFindToneData } from "./tone.interface";
 
 export const getAllTone = async (req: Request<{}, {}, {}, queryFindToneData>, res: Response, _next: NextFunction) => {
     const isActive = req.query.isActive;
-    const tones = await ToneService.getAllTone(isActive);
+    const category = req.query.category;
+    if (!category) {
+        return res.status(422).json({
+            success: false,
+            data: null,
+            message: `Category ID is required`,
+        });
+    }
+    const tones = await ToneService.getAllTone(isActive, category);
     return res.status(200).json({
         success: true,
         data: tones,

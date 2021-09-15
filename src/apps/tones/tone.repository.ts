@@ -4,9 +4,19 @@ import { Tone } from "./entity/Tone";
  * Repository Methods
  */
 
-export const getAllTone = async (isActive: boolean | null) => {
-    const whereQuery = isActive ? { where: { isActive } } : undefined;
-    return await getRepository(Tone).find(whereQuery);
+export const getAllTone = async (isActive: boolean, categoryId: string) => {
+    return await getRepository(Tone)
+        .createQueryBuilder("tone")
+        .select()
+        .where("tone.categories ::jsonb @> :categories", {
+            categories: JSON.stringify([
+                {
+                    id: categoryId,
+                },
+            ]),
+        })
+        .andWhere("tone.isActive = :isActive", { isActive })
+        .getMany();
 };
 
 export const storeOrUpdateTone = async (data: Tone) => {

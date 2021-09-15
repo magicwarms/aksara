@@ -6,3 +6,7 @@ export interface fromtoName {
     us: string;
     id: string;
 }
+
+export interface categories {
+    id: string;
+}

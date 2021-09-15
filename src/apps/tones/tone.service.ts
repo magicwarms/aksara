@@ -14,8 +14,8 @@ import { normalizeKey } from "../../utilities/helper";
 /**
  * Service Methods
  */
-export const getAllTone = async (isActive: boolean | null): Promise<Tone[]> => {
-    let getAllTone = await ToneRepository.getAllTone(isActive);
+export const getAllTone = async (isActive: boolean, category: string): Promise<Tone[]> => {
+    let getAllTone = await ToneRepository.getAllTone(isActive, category);
     if (getAllTone.length < 0) getAllTone = [];
     return getAllTone;
 };
@@ -25,6 +25,7 @@ export const storeOrUpdateTone = async (toneData: Tone): Promise<Tone | Validati
     tone.id = isEmpty(toneData.id) ? undefined : toneData.id;
     tone.key = { id: normalizeKey(toneData.name.id), us: normalizeKey(toneData.name.us) };
     tone.name = toneData.name;
+    tone.categories = toneData.categories;
     tone.isActive = toneData.isActive;
 
     const validateData = await validation(tone);

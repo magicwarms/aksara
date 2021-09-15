@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 
 import { IsNotEmpty } from "class-validator";
-import { toneName } from "../tone.interface";
+import { categories, toneName } from "../tone.interface";
 
 @Entity()
 @Index(["id"])
@@ -24,6 +24,10 @@ export class Tone {
     @Column("jsonb", { nullable: false })
     @IsNotEmpty()
     name!: toneName;
+
+    @Column("jsonb", { nullable: true })
+    @IsNotEmpty()
+    categories!: categories[];
 
     @Column({ type: "bool", width: 1, nullable: false, default: true })
     isActive!: boolean;
