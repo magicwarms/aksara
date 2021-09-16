@@ -63,3 +63,25 @@ export const deletePaymentMethod = async (req: Request, res: Response, next: Nex
         next(err);
     }
 };
+
+export const storePayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId: string = res.locals.userId;
+        const storePayment = await PaymentService.storePayment(req.body, userId);
+        if (storePayment instanceof Array) {
+            return res.status(422).json({
+                success: false,
+                data: storePayment,
+                message: `Validation error`,
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            data: {},
+            message: `Payment data successfully saved`,
+        });
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
