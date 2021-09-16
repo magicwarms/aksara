@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { IsNotEmpty, Length } from "class-validator";
 import { featureCompletion } from "../../completions/completion.interface";
 import { Status } from "../payment.enum";
+import { itemDetails } from "../payment.interface";
 
 @Entity()
 @Index(["id", "userId"])
@@ -25,14 +26,22 @@ export class Payment {
 
     @Column({ type: "numeric", nullable: false })
     @IsNotEmpty()
-    amount!: string;
+    amountCreditPrice!: number;
+
+    @Column({ type: "numeric", nullable: false })
+    @IsNotEmpty()
+    credits!: number;
+
+    @Column({ type: "numeric", nullable: false })
+    @IsNotEmpty()
+    grandtotal!: number;
 
     @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
-    orderDetails!: string;
+    orderDetail!: string;
 
     @Column("jsonb", { nullable: false })
-    itemDetails!: featureCompletion;
+    itemDetails!: itemDetails[];
 
     @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()

@@ -67,12 +67,19 @@ export const loginOrRegisterCustomer = async (
 
         storeUser = await UserRepository.storeOrUpdateUser(user);
     }
-    let userId: string = isEmpty(checkEmailExist) ? storeUser?.id! : checkEmailExist?.id!;
-    let roleUser: Roles = isEmpty(checkEmailExist) ? storeUser?.role! : checkEmailExist?.role!;
+    const userId: string = isEmpty(checkEmailExist) ? storeUser?.id! : checkEmailExist?.id!;
+    const email: string = isEmpty(checkEmailExist) ? storeUser?.email! : checkEmailExist?.email!;
+    const roleUser: Roles = isEmpty(checkEmailExist) ? storeUser?.role! : checkEmailExist?.role!;
+    const fullname: string = isEmpty(checkEmailExist)
+        ? `${storeUser?.firstname} ${storeUser?.lastname}`
+        : `${checkEmailExist?.firstname} ${checkEmailExist?.lastname}`;
+
     const generatedToken: string = jwt.sign(
         {
             id: userId,
+            email,
             role: roleUser,
+            fullname,
         },
         JWT_SECRET,
         { expiresIn: "30 days", algorithm: "HS512" }
@@ -83,6 +90,7 @@ export const loginOrRegisterCustomer = async (
         token: generatedToken,
         role: roleUser,
         id: userId,
+        email,
     };
 };
 

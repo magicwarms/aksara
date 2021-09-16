@@ -6,4 +6,5 @@ export interface UserAuthentification {
     token: string;
     role: Roles;
     id: string;
+    email: string;
 }

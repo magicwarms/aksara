@@ -27,6 +27,8 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
             ...res.locals,
             userId: payload?.id,
             role: payload?.role,
+            email: payload?.email,
+            fullname: payload?.fullname,
         };
         // Request has a valid or renewed session. Call next to continue to the authenticated route handler
         next();

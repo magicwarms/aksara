@@ -67,7 +67,9 @@ export const deletePaymentMethod = async (req: Request, res: Response, next: Nex
 export const storePayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId: string = res.locals.userId;
-        const storePayment = await PaymentService.storePayment(req.body, userId);
+        const userEmail: string = res.locals.email;
+        const userFullname: string = res.locals.fullname;
+        const storePayment = await PaymentService.storePayment(req.body, { userId, userEmail, userFullname });
         if (storePayment instanceof Array) {
             return res.status(422).json({
                 success: false,
