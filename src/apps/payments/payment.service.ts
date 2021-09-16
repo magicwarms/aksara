@@ -24,7 +24,8 @@ export const storeOrUpdatePaymentMethod = async (
 ): Promise<PaymentMethod | ValidationError[]> => {
     const paymentMethod = new PaymentMethod();
     paymentMethod.id = isEmpty(paymentMethodData.id) ? undefined : paymentMethodData.id;
-    paymentMethod.name = paymentMethodData.name;
+    paymentMethod.name = paymentMethodData.name.toUpperCase();
+    paymentMethod.fullname = paymentMethodData.fullname;
     paymentMethod.isActive = paymentMethodData.isActive;
 
     const validateData = await validation(paymentMethod);

@@ -4,11 +4,11 @@ import logger from "../../config/logger";
 import * as PaymentService from "./payment.service";
 
 export const getAllPaymentMethod = async (_req: Request, res: Response, _next: NextFunction) => {
-    const paymentsData = await PaymentService.getAllPaymentMethod();
+    const paymentMethodsData = await PaymentService.getAllPaymentMethod();
     return res.status(200).json({
         success: true,
-        data: paymentsData,
-        message: "Features data found",
+        data: paymentMethodsData,
+        message: "Payment method data found",
     });
 };
 
@@ -27,7 +27,7 @@ export const storeOrUpdatePaymentMethod = async (req: Request, res: Response, ne
         return res.status(200).json({
             success: true,
             data: storeOrUpdatePaymentMethod,
-            message: `Payment data successfully ${status}`,
+            message: `Payment method data successfully ${status}`,
         });
     } catch (err) {
         logger.error(err);

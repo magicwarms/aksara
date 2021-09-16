@@ -21,6 +21,10 @@ export class PaymentMethod {
     @IsNotEmpty()
     name!: string;
 
+    @Column({ type: "varchar", nullable: false })
+    @IsNotEmpty()
+    fullname!: string;
+
     @Column({ type: "bool", width: 1, nullable: false, default: true })
     isActive!: boolean;
 
