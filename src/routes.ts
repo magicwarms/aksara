@@ -28,6 +28,6 @@ router.use("/feature-subcategory", [verifyToken], featureSubCategoryRouter);
 
 router.use("/user", userRouter);
 router.use("/completion", [verifyToken], completionRouter);
-router.use("/payment", [verifyToken], paymentRouter);
+router.use("/payment", paymentRouter);
 
 export default router;

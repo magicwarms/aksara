@@ -40,7 +40,6 @@ export const storeOrUpdateTone = async (req: Request, res: Response, next: NextF
             message: `Tone data successfully ${status}`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -69,7 +68,6 @@ export const deleteTone = async (req: Request, res: Response, next: NextFunction
             message: "Tone data successfully deleted",
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };

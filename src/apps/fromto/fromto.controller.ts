@@ -44,7 +44,6 @@ export const storeOrUpdateFromTo = async (req: Request, res: Response, next: Nex
             message: `From and To data successfully ${status}`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -73,7 +72,6 @@ export const deleteFromTo = async (req: Request, res: Response, next: NextFuncti
             message: "Tone data successfully deleted",
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };

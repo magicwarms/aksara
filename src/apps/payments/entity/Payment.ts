@@ -1,8 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm";
 
 import { IsNotEmpty, Length } from "class-validator";
-import { featureCompletion } from "../../completions/completion.interface";
-import { Status } from "../payment.enum";
 import { itemDetails } from "../payment.interface";
 
 @Entity()
@@ -38,7 +36,7 @@ export class Payment {
 
     @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
-    orderDetail!: string;
+    orderDescription!: string;
 
     @Column("jsonb", { nullable: false })
     itemDetails!: itemDetails[];
@@ -47,9 +45,13 @@ export class Payment {
     @IsNotEmpty()
     referenceDuitKuId!: string;
 
-    @Column({ type: "enum", enum: Status, default: Status.PENDING, width: 8, nullable: false })
+    @Column({ type: "varchar", width: 2, nullable: false })
     @IsNotEmpty()
-    status!: Status;
+    status!: string;
+
+    @Column({ type: "varchar", width: 8, nullable: false })
+    @IsNotEmpty()
+    statusMessage!: string;
 
     @CreateDateColumn({ type: "timestamp with time zone" })
     createdDate?: Date;

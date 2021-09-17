@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as PaymentService from "./payment.service";
 
 export const getAllPaymentMethod = async (_req: Request, res: Response, _next: NextFunction) => {
@@ -30,7 +29,6 @@ export const storeOrUpdatePaymentMethod = async (req: Request, res: Response, ne
             message: `Payment method data successfully ${status}`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -59,7 +57,6 @@ export const deletePaymentMethod = async (req: Request, res: Response, next: Nex
             message: "Payment method data successfully deleted",
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -79,11 +76,41 @@ export const storePayment = async (req: Request, res: Response, next: NextFuncti
         }
         return res.status(200).json({
             success: true,
-            data: {},
+            data: { storePayment },
             message: `Payment data successfully saved`,
         });
     } catch (err) {
-        logger.error(err);
+        console.log(err);
+        next(err);
+    }
+};
+
+export const processPayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // TO-DO
+        // ini belum tahu kegunaan nya apa
+        console.log("process BODY callback", req.body);
+        return res.status(200).json({
+            success: true,
+            data: req.body,
+            message: `Payment data successfully processed`,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const processReturnPayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log("process BODY return", req.body);
+        await PaymentService.updateStatusPayment({
+            reference: String(req.query.reference),
+            resultCode: String(req.query.resultCode),
+        });
+        // TO-DO
+        // ini harus nya redirect ke aksara frontend
+        return res.redirect("http://www.google.com/");
+    } catch (err) {
         next(err);
     }
 };

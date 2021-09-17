@@ -36,7 +36,6 @@ export const storeOrUpdateFeature = async (req: Request, res: Response, next: Ne
             message: `Feature data successfully ${status}`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -65,7 +64,6 @@ export const deleteFeature = async (req: Request, res: Response, next: NextFunct
             message: "Feature data successfully deleted",
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };

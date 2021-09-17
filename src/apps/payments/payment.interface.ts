@@ -26,3 +26,13 @@ export interface transactionData {
     expiryPeriod: number;
     shopee?: string;
 }
+
+export interface responsePayment {
+    merchantCode: string;
+    reference: string;
+    paymentUrl: string;
+    statusCode: string;
+    statusMessage: string;
+    amount: string;
+    vaNumber: string;
+}

@@ -50,7 +50,6 @@ export const storeOrUpdateFeatureSubCategory = async (req: Request, res: Respons
             message: `Feature subcategory data successfully ${status}`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -79,7 +78,6 @@ export const deleteFeatureSubCategory = async (req: Request, res: Response, next
             message: "Feature subcategory data successfully deleted",
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };

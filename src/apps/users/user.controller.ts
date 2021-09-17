@@ -39,7 +39,6 @@ export const updateUserProfile = async (req: Request, res: Response, next: NextF
             message: `User data successfully updated`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -68,7 +67,6 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
             message: "User data successfully deleted",
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -89,7 +87,6 @@ export const loginOrRegisterCustomer = async (req: Request, res: Response, next:
             message: `User authenticated`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };
@@ -104,7 +101,6 @@ export const logoutUser = async (_req: Request, res: Response, next: NextFunctio
             message: `Log out successfull`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };

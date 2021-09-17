@@ -10,9 +10,9 @@ import validation from "../../config/validation";
 import { PaymentMethod } from "./entity/PaymentMethod";
 import { Payment } from "./entity/Payment";
 import * as PaymentRepository from "./payment.repository";
-import { setNanoId } from "../../utilities/helper";
+import { checkStatusCode, setNanoId, setStatusMessageRedirect } from "../../utilities/helper";
 import axios from "axios";
-import { transactionData } from "./payment.interface";
+import { responsePayment, transactionData } from "./payment.interface";
 import { Md5 } from "ts-md5/dist/md5";
 
 /**
@@ -45,7 +45,7 @@ export const deletePaymentMethod = async (id: string): Promise<UpdateResult> => 
     return await PaymentRepository.deletePaymentMethod(id);
 };
 
-const requestTransactionDuitKu = async (trxData: transactionData) => {
+const requestTransactionDuitKu = async (data: transactionData) => {
     const endpoint =
         process.env.NODE_ENV === "production"
             ? process.env.DUITKU_API_ENDPOINT_REQUEST_TRANSACTION_PROD
@@ -57,17 +57,20 @@ const requestTransactionDuitKu = async (trxData: transactionData) => {
         headers: {
             "Content-Type": "application/json",
         },
-        data: { trxData },
+        data,
     });
-
-    return requestTrxDuitku;
+    if (requestTrxDuitku.status !== 200) {
+        throw new Error("Payment error");
+    }
+    return requestTrxDuitku.data;
 };
 
 export const storePayment = async (
     paymentData: Payment,
     user: { userId: string; userEmail: string; userFullname: string }
-): Promise<Payment | ValidationError[] | null> => {
+): Promise<Payment | ValidationError[] | responsePayment> => {
     const transactionCode = `ORDER-${setNanoId()}`;
+
     const merchantCode: string | undefined =
         process.env.NODE_ENV === "production"
             ? process.env.MERCHANT_CODE_DUITKU_PROD
@@ -87,20 +90,20 @@ export const storePayment = async (
             : process.env.CALLBACK_URL_DUITKU_DEV;
 
     const grandtotalPayment = Number(paymentData.grandtotal);
-    const orderDetail = `Payment for ${paymentData.itemDetails.feature} → ${paymentData.itemDetails.featureCategory} → ${paymentData.itemDetails.featureSubCategory}`;
+    const orderDescription = `Payment for purchase ${paymentData.credits} credits`;
     const fullnameSplit = user.userFullname.split(" ");
 
     const transactionData: transactionData = {
         merchantCode,
         paymentAmount: grandtotalPayment,
         merchantOrderId: transactionCode,
-        productDetails: orderDetail,
+        productDetails: orderDescription,
         email: user.userEmail,
         paymentMethod: paymentData.paymentMethod.toUpperCase(),
         customerVaName: user.userFullname,
         itemDetails: [
             {
-                name: orderDetail,
+                name: orderDescription,
                 quantity: paymentData.credits,
                 price: Number(paymentData.amountCreditPrice),
             },
@@ -116,22 +119,44 @@ export const storePayment = async (
         expiryPeriod: 60, // in minutes
     };
 
-    const paymentProcess = await requestTransactionDuitKu(transactionData);
-    console.log(paymentProcess);
-    // const payment = new Payment();
-    // payment.userId = user.userId;
-    // payment.transactionCode = transactionCode;
-    // payment.paymentMethod = paymentData.paymentMethod.toUpperCase();
-    // payment.amountCreditPrice = paymentData.amountCreditPrice;
-    // payment.orderDetail = orderDetail;
-    // payment.itemDetails = paymentData.itemDetails;
-    // payment.referenceDuitKuId = paymentData.referenceDuitKuId;
-    // payment.status = paymentData.status;
+    const paymentRequest = await requestTransactionDuitKu(transactionData);
+    const payment = new Payment();
+    payment.userId = user.userId;
+    payment.transactionCode = transactionCode;
+    payment.paymentMethod = paymentData.paymentMethod.toUpperCase();
+    payment.amountCreditPrice = paymentData.amountCreditPrice;
+    payment.orderDescription = orderDescription;
+    payment.itemDetails = transactionData.itemDetails;
+    payment.referenceDuitKuId = paymentRequest.reference;
+    payment.credits = paymentData.credits;
+    payment.status = paymentRequest.statusCode;
+    payment.statusMessage = paymentRequest.statusMessage;
+    payment.grandtotal = grandtotalPayment;
 
-    // const validateData = await validation(payment);
-    // if (validateData.length > 0) return validateData;
+    const validateData = await validation(payment);
+    if (validateData.length > 0) return validateData;
 
-    // const storePayment = await PaymentRepository.storePayment(payment);
+    const storePayment = await PaymentRepository.storePayment(payment);
+    if (!storePayment) throw new Error("Store payment data error");
+    return paymentRequest;
+};
 
-    return null;
+export const updateStatusPayment = async (updateStatusPayment: {
+    reference: string;
+    resultCode: string;
+}): Promise<UpdateResult> => {
+    // TO-DO
+    // sebelum simpen payment status cek dulu referenceDuitKuId nya ada apa enggak di DB
+    // kalo gak ada keluarin error
+    const paymentUpdate = new Payment();
+    paymentUpdate.referenceDuitKuId = updateStatusPayment.reference;
+    const checkStatus = checkStatusCode(updateStatusPayment.resultCode);
+    if (checkStatus === "ERROR") throw new Error("Status code unidentified");
+    paymentUpdate.status = checkStatus;
+    paymentUpdate.statusMessage = setStatusMessageRedirect(checkStatus);
+
+    // TO-DO
+    // kalau berhasil bayar tambahin ke credits table
+
+    return await PaymentRepository.updateStatusPayment(paymentUpdate);
 };

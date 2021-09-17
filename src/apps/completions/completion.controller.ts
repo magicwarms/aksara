@@ -30,7 +30,6 @@ export const storeCompletion = async (req: Request, res: Response, next: NextFun
             message: `Completion successfully saved`,
         });
     } catch (err) {
-        logger.error(err);
         next(err);
     }
 };

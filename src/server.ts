@@ -12,6 +12,7 @@ import { createConnection } from "typeorm";
 
 import { rateLimiter, speedLimiter } from "./utilities/rateSpeedLimiter";
 import router from "./routes";
+import logger from "./config/logger";
 
 dotenv.config();
 
@@ -76,7 +77,27 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
             message: `Validation error`,
         });
     }
-    console.error(err);
+    let errorFormat = err;
+    // object error below is coming from Axios
+    if (err.response) {
+        errorFormat = {
+            status: err.response.status,
+            statusText: err.response.statusText,
+            config: {
+                url: err.response.config.url,
+                method: err.response.config.method,
+                data: err.response.config.data,
+                headers: err.response.config.headers,
+            },
+            msg: err.response.data.Message,
+        };
+        console.error(errorFormat);
+    } else {
+        console.error(errorFormat.message);
+    }
+
+    logger.error(errorFormat);
+
     return res.status(500).json({
         success: false,
         data: {},

@@ -9,7 +9,7 @@ const myFormat = printf(({ message, timestamp }) => {
 
 // Debugging purpose with winston
 const logger = createLogger({
-    level: "info",
+    level: "error",
     format: combine(format.json({ space: 2 }), timestamp(), myFormat, prettyPrint()),
     transports: [
         // Write all logs with level `error` and below to `error.log`

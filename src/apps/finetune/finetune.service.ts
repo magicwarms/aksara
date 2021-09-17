@@ -128,7 +128,6 @@ export const convertCsvToJsonLine = async (data: any): Promise<any> => {
 
         return true;
     } catch (err) {
-        logger.error(err);
     } finally {
         deleteFile("temp/" + data.file.filename);
     }

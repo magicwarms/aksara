@@ -23,3 +23,14 @@ export const storePayment = async (paymentData: Payment): Promise<Payment> => {
     });
     return storePayment;
 };
+
+export const updateStatusPayment = async (paymentUpdate: {
+    referenceDuitKuId: string;
+    status: string;
+    statusMessage: string;
+}): Promise<UpdateResult> => {
+    return await getRepository(Payment).update(
+        { referenceDuitKuId: paymentUpdate.referenceDuitKuId },
+        { status: paymentUpdate.status, statusMessage: paymentUpdate.statusMessage }
+    );
+};
