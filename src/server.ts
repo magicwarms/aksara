@@ -2,6 +2,7 @@
  * Required External Modules
  */
 import * as dotenv from "dotenv";
+dotenv.config();
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -13,8 +14,6 @@ import { createConnection } from "typeorm";
 import { rateLimiter, speedLimiter } from "./utilities/rateSpeedLimiter";
 import router from "./routes";
 import logger from "./config/logger";
-
-dotenv.config();
 
 const numCPUS = os.cpus().length;
 

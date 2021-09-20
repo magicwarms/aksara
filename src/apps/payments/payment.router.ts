@@ -24,5 +24,6 @@ paymentRouter.delete("/method/delete", [verifyToken, verifyAdminAccess], Payment
 paymentRouter.post("/pay", [verifyToken], PaymentController.storePayment);
 paymentRouter.post("/process", PaymentController.processPayment);
 paymentRouter.get("/return", PaymentController.processReturnPayment);
+paymentRouter.get("/check", [verifyToken], PaymentController.checkTransaction);
 
 export default paymentRouter;

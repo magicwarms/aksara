@@ -14,10 +14,13 @@ import { checkStatusCode, setNanoId, setStatusMessageRedirect } from "../../util
 import axios from "axios";
 import { responsePayment, transactionData } from "./payment.interface";
 import { Md5 } from "ts-md5/dist/md5";
+import paymentConfig from "../../config/payment";
+import { StatusCode, StatusMessage } from "./payment.enum";
 
 /**
  * Service Methods
  */
+
 export const getAllPaymentMethod = async (): Promise<PaymentMethod[]> => {
     let getAllPaymentMethod = await PaymentRepository.getAllPaymentMethod();
     if (getAllPaymentMethod.length < 0) getAllPaymentMethod = [];
@@ -46,11 +49,7 @@ export const deletePaymentMethod = async (id: string): Promise<UpdateResult> => 
 };
 
 const requestTransactionDuitKu = async (data: transactionData) => {
-    const endpoint =
-        process.env.NODE_ENV === "production"
-            ? process.env.DUITKU_API_ENDPOINT_REQUEST_TRANSACTION_PROD
-            : process.env.DUITKU_API_ENDPOINT_REQUEST_TRANSACTION_DEV;
-
+    const endpoint: string = paymentConfig.endpointRequestTransaction;
     const requestTrxDuitku = await axios({
         url: endpoint,
         method: "post",
@@ -65,36 +64,40 @@ const requestTransactionDuitKu = async (data: transactionData) => {
     return requestTrxDuitku.data;
 };
 
+const checkTransactionDuitKu = async (data: { merchantCode: string; merchantOrderId: string; signature: string }) => {
+    const endpoint: string = paymentConfig.endpointCheckTransaction;
+    const checkTrxDuitku = await axios({
+        url: endpoint,
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        data,
+    });
+    if (checkTrxDuitku.status !== 200) {
+        throw new Error("Check status payment error");
+    }
+    return checkTrxDuitku.data;
+};
+
 export const storePayment = async (
     paymentData: Payment,
     user: { userId: string; userEmail: string; userFullname: string }
 ): Promise<Payment | ValidationError[] | responsePayment> => {
     const transactionCode = `ORDER-${setNanoId()}`;
 
-    const merchantCode: string | undefined =
-        process.env.NODE_ENV === "production"
-            ? process.env.MERCHANT_CODE_DUITKU_PROD
-            : process.env.MERCHANT_CODE_DUITKU_DEV;
+    const merchantCodeData: string = paymentConfig.merchantCode;
+    const merchantKeyData: string = paymentConfig.merchantKey;
 
-    const merchantKey: string | undefined =
-        process.env.NODE_ENV === "production"
-            ? process.env.MERCHANT_KEY_DUITKU_PROD
-            : process.env.MERCHANT_KEY_DUITKU_DEV;
-
-    const returnUrl: string | undefined =
-        process.env.NODE_ENV === "production" ? process.env.RETURN_URL_DUITKU_PROD : process.env.RETURN_URL_DUITKU_DEV;
-
-    const callbackUrl: string | undefined =
-        process.env.NODE_ENV === "production"
-            ? process.env.CALLBACK_URL_DUITKU_PROD
-            : process.env.CALLBACK_URL_DUITKU_DEV;
-
+    const returnUrl: string = paymentConfig.returnUrl;
+    const callbackUrl: string = paymentConfig.callbackUrl;
+    console.log(callbackUrl);
     const grandtotalPayment = Number(paymentData.grandtotal);
     const orderDescription = `Payment for purchase ${paymentData.credits} credits`;
     const fullnameSplit = user.userFullname.split(" ");
 
     const transactionData: transactionData = {
-        merchantCode,
+        merchantCode: merchantCodeData,
         paymentAmount: grandtotalPayment,
         merchantOrderId: transactionCode,
         productDetails: orderDescription,
@@ -115,11 +118,12 @@ export const storePayment = async (
         },
         returnUrl,
         callbackUrl,
-        signature: Md5.hashStr(`${merchantCode}${transactionCode}${grandtotalPayment}${merchantKey}`),
-        expiryPeriod: 60, // in minutes
+        signature: Md5.hashStr(`${merchantCodeData}${transactionCode}${grandtotalPayment}${merchantKeyData}`),
+        expiryPeriod: 1, // in minutes
     };
 
     const paymentRequest = await requestTransactionDuitKu(transactionData);
+
     const payment = new Payment();
     payment.userId = user.userId;
     payment.transactionCode = transactionCode;
@@ -129,8 +133,8 @@ export const storePayment = async (
     payment.itemDetails = transactionData.itemDetails;
     payment.referenceDuitKuId = paymentRequest.reference;
     payment.credits = paymentData.credits;
-    payment.status = paymentRequest.statusCode;
-    payment.statusMessage = paymentRequest.statusMessage;
+    payment.status = StatusCode.PROCESS;
+    payment.statusMessage = StatusMessage.PROCESS;
     payment.grandtotal = grandtotalPayment;
 
     const validateData = await validation(payment);
@@ -148,6 +152,11 @@ export const updateStatusPayment = async (updateStatusPayment: {
     // TO-DO
     // sebelum simpen payment status cek dulu referenceDuitKuId nya ada apa enggak di DB
     // kalo gak ada keluarin error
+    const checkReferenceId = await PaymentRepository.getPaymentByReferenceId(updateStatusPayment.reference);
+    if (isEmpty(checkReferenceId)) {
+        throw new Error("Reference code not found");
+    }
+
     const paymentUpdate = new Payment();
     paymentUpdate.referenceDuitKuId = updateStatusPayment.reference;
     const checkStatus = checkStatusCode(updateStatusPayment.resultCode);
@@ -159,4 +168,16 @@ export const updateStatusPayment = async (updateStatusPayment: {
     // kalau berhasil bayar tambahin ke credits table
 
     return await PaymentRepository.updateStatusPayment(paymentUpdate);
+};
+
+export const checkTransaction = async (transactionCode: string): Promise<UpdateResult> => {
+    const merchantCodeData: string = paymentConfig.merchantCode;
+    const merchantKeyData: string = paymentConfig.merchantKey;
+
+    const data = {
+        merchantCode: merchantCodeData,
+        merchantOrderId: transactionCode,
+        signature: Md5.hashStr(`${merchantCodeData}${transactionCode}${merchantKeyData}`),
+    };
+    return await checkTransactionDuitKu(data);
 };

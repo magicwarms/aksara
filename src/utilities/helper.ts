@@ -9,7 +9,7 @@ export const normalizeKey = (keyString: string): string => {
 export const setNanoId = (): string => nanoid();
 
 export const setStatusMessageRedirect = (statusCode: string): StatusMessage => {
-    let statusMsg = StatusMessage.PENDING;
+    let statusMsg = StatusMessage.PROCESS;
     if (statusCode === "00") {
         statusMsg = StatusMessage.SUCCESS;
     } else if (statusCode === "02") {
@@ -25,7 +25,7 @@ export const checkStatusCode = (status: string): StatusCode | string => {
     } else if (status === "02") {
         statusCode = StatusCode.CANCEL;
     } else if (status === "01") {
-        statusCode = StatusCode.PENDING;
+        statusCode = StatusCode.PROCESS;
     } else {
         return "ERROR";
     }

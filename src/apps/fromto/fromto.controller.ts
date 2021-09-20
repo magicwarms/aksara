@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as FromToService from "./fromto.service";
 import { queryFindFromtoData } from "./fromto.inteface";
 

@@ -34,3 +34,7 @@ export const updateStatusPayment = async (paymentUpdate: {
         { status: paymentUpdate.status, statusMessage: paymentUpdate.statusMessage }
     );
 };
+
+export const getPaymentByReferenceId = async (reference: string) => {
+    return await getRepository(Payment).findOne({ where: { referenceDuitKuId: reference } });
+};

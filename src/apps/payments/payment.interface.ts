@@ -1,3 +1,7 @@
+export interface queryCheckTrxPayment {
+    transactionCode: string;
+}
+
 export interface itemDetails {
     name: string;
     quantity: number;
