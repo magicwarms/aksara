@@ -8,12 +8,14 @@ export const normalizeKey = (keyString: string): string => {
 
 export const setNanoId = (): string => nanoid();
 
-export const setStatusMessageRedirect = (statusCode: string): StatusMessage => {
-    let statusMsg = StatusMessage.PROCESS;
+export const setStatusMessageCallback = (statusCode: string): StatusMessage | string => {
+    let statusMsg;
     if (statusCode === "00") {
         statusMsg = StatusMessage.SUCCESS;
-    } else if (statusCode === "02") {
-        statusMsg = StatusMessage.CANCEL;
+    } else if (statusCode === "01") {
+        statusMsg = StatusMessage.FAILED;
+    } else {
+        return "ERROR";
     }
     return statusMsg;
 };
@@ -22,10 +24,8 @@ export const checkStatusCode = (status: string): StatusCode | string => {
     let statusCode;
     if (status === "00") {
         statusCode = StatusCode.SUCCESS;
-    } else if (status === "02") {
-        statusCode = StatusCode.CANCEL;
     } else if (status === "01") {
-        statusCode = StatusCode.PROCESS;
+        statusCode = StatusCode.FAILED;
     } else {
         return "ERROR";
     }

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm";
 
-import { IsNotEmpty, Length } from "class-validator";
-import { itemDetails } from "../payment.interface";
+import { IsNotEmpty } from "class-validator";
+import { itemDetails, paymentMethod } from "../payment.interface";
 
 @Entity()
 @Index(["id", "userId"])
@@ -17,10 +17,9 @@ export class Payment {
     @IsNotEmpty()
     transactionCode!: string;
 
-    @Column({ type: "varchar", nullable: false })
-    @Length(2, 2, { message: "Metode pembayaran terlalu pendek. Minimal $constraint1 karakter" })
+    @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    paymentMethod!: string;
+    paymentMethod!: paymentMethod;
 
     @Column({ type: "numeric", nullable: false })
     @IsNotEmpty()

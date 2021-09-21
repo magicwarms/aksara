@@ -17,6 +17,10 @@ export const deletePaymentMethod = async (id: string): Promise<UpdateResult> => 
     return await getRepository(PaymentMethod).softDelete(id);
 };
 
+export const getPaymentPaymentMethodByCodeName = async (paymentCodeName: string) => {
+    return await getRepository(PaymentMethod).findOne({ where: { name: paymentCodeName } });
+};
+
 export const storePayment = async (paymentData: Payment): Promise<Payment> => {
     const storePayment = await getConnection().transaction(async (transactionalEntityManager) => {
         return await transactionalEntityManager.getRepository(Payment).save(paymentData);
@@ -36,5 +40,5 @@ export const updateStatusPayment = async (paymentUpdate: {
 };
 
 export const getPaymentByReferenceId = async (reference: string) => {
-    return await getRepository(Payment).findOne({ where: { referenceDuitKuId: reference } });
+    return await getRepository(Payment).findOne({ where: { referenceDuitKuId: reference }, select: ["id"] });
 };

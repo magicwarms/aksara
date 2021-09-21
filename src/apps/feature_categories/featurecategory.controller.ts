@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as FeatureCategoryService from "./featurecategory.service";
 import { queryFindFeatureCategoryData } from "./featurecategory.interface";
 import { isEmpty } from "lodash";

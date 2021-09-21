@@ -9,6 +9,7 @@ import featureCategoryRouter from "./apps/feature_categories/featurecategory.rou
 import featureSubCategoryRouter from "./apps/feature_subcategories/featuresubcategory.router";
 import completionRouter from "./apps/completions/completion.router";
 import paymentRouter from "./apps/payments/payment.router";
+import creditRouter from "./apps/credits/credit.router";
 
 import { verifyToken, verifyAdminAccess } from "./apps/middlewares";
 /**
@@ -29,5 +30,6 @@ router.use("/feature-subcategory", [verifyToken], featureSubCategoryRouter);
 router.use("/user", userRouter);
 router.use("/completion", [verifyToken], completionRouter);
 router.use("/payment", paymentRouter);
+router.use("/credit", creditRouter);
 
 export default router;

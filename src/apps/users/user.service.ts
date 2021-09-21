@@ -10,6 +10,7 @@ import { JWT_SECRET } from "../../config/jwtsecret";
 
 import { User } from "./entity/User";
 import * as UserRepository from "./user.repository";
+import { storeOrUpdateCreditUser } from "../credits/credit.service";
 
 import { UserAuthentification } from "./user.inteface";
 import { Roles } from "./user.enum";
@@ -66,6 +67,8 @@ export const loginOrRegisterCustomer = async (
         if (validateData.length > 0) return validateData;
 
         storeUser = await UserRepository.storeOrUpdateUser(user);
+        // initiate credit user
+        storeOrUpdateCreditUser({ userId: storeUser?.id!, credit: 0 });
     }
     const userId: string = isEmpty(checkEmailExist) ? storeUser?.id! : checkEmailExist?.id!;
     const email: string = isEmpty(checkEmailExist) ? storeUser?.email! : checkEmailExist?.email!;

@@ -40,3 +40,8 @@ export interface responsePayment {
     amount: string;
     vaNumber: string;
 }
+
+export interface paymentMethod {
+    fullname: string;
+    name: string;
+}
