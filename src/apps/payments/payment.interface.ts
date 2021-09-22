@@ -2,6 +2,10 @@ export interface queryCheckTrxPayment {
     transactionCode: string;
 }
 
+export interface queryGetAllPaymentMethod {
+    amount: number;
+}
+
 export interface itemDetails {
     name: string;
     quantity: number;
@@ -42,6 +46,15 @@ export interface responsePayment {
 }
 
 export interface paymentMethod {
-    fullname: string;
-    name: string;
+    paymentName: string;
+    paymentMethod: string;
+}
+
+export interface responsePaymentStatus {
+    merchantOrderId: string;
+    reference: string;
+    amount: string;
+    fee: string;
+    statusCode: string;
+    statusMessage: string;
 }

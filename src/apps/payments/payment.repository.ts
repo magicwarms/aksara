@@ -1,25 +1,8 @@
 import { getConnection, getRepository, UpdateResult } from "typeorm";
 import { Payment } from "./entity/Payment";
-import { PaymentMethod } from "./entity/PaymentMethod";
 /**
  * Repository Methods
  */
-
-export const getAllPaymentMethod = async () => {
-    return await getRepository(PaymentMethod).find({ where: { isActive: true } });
-};
-
-export const storeOrUpdatePaymentMethod = async (data: PaymentMethod) => {
-    return await getRepository(PaymentMethod).save(data);
-};
-
-export const deletePaymentMethod = async (id: string): Promise<UpdateResult> => {
-    return await getRepository(PaymentMethod).softDelete(id);
-};
-
-export const getPaymentPaymentMethodByCodeName = async (paymentCodeName: string) => {
-    return await getRepository(PaymentMethod).findOne({ where: { name: paymentCodeName } });
-};
 
 export const storePayment = async (paymentData: Payment): Promise<Payment> => {
     const storePayment = await getConnection().transaction(async (transactionalEntityManager) => {
@@ -40,5 +23,8 @@ export const updateStatusPayment = async (paymentUpdate: {
 };
 
 export const getPaymentByReferenceId = async (reference: string) => {
-    return await getRepository(Payment).findOne({ where: { referenceDuitKuId: reference }, select: ["id"] });
+    return await getRepository(Payment).findOne({
+        where: { referenceDuitKuId: reference },
+        select: ["id", "userId", "credits", "status"],
+    });
 };

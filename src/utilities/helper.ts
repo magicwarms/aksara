@@ -13,7 +13,7 @@ export const setStatusMessageCallback = (statusCode: string): StatusMessage | st
     if (statusCode === "00") {
         statusMsg = StatusMessage.SUCCESS;
     } else if (statusCode === "01") {
-        statusMsg = StatusMessage.FAILED;
+        statusMsg = StatusMessage.FAILED_PENDING;
     } else {
         return "ERROR";
     }
@@ -25,9 +25,27 @@ export const checkStatusCode = (status: string): StatusCode | string => {
     if (status === "00") {
         statusCode = StatusCode.SUCCESS;
     } else if (status === "01") {
-        statusCode = StatusCode.FAILED;
+        statusCode = StatusCode.FAILED_PENDING;
     } else {
         return "ERROR";
     }
     return statusCode;
+};
+
+export const currentFormattedDateTime = () => {
+    const date_ob = new Date();
+    // adjust 0 before single digit date
+    const date = ("0" + date_ob.getDate()).slice(-2);
+    // current month
+    const month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    // current year
+    const year = date_ob.getFullYear();
+    // current hours
+    const hours = ("0" + (date_ob.getHours() + 1)).slice(-2);
+    // current minutes
+    const minutes = ("0" + (date_ob.getMinutes() + 1)).slice(-2);
+    // current seconds
+    const seconds = ("0" + (date_ob.getSeconds() + 1)).slice(-2);
+    // prints date & time in YYYY-MM-DD HH:MM:SS format
+    return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 };

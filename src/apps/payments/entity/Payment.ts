@@ -19,7 +19,7 @@ export class Payment {
 
     @Column("jsonb", { nullable: false })
     @IsNotEmpty()
-    paymentMethod!: paymentMethod;
+    payment!: paymentMethod;
 
     @Column({ type: "numeric", nullable: false })
     @IsNotEmpty()
@@ -28,6 +28,10 @@ export class Payment {
     @Column({ type: "numeric", nullable: false })
     @IsNotEmpty()
     credits!: number;
+
+    @Column({ type: "numeric", nullable: false })
+    @IsNotEmpty()
+    fee!: number;
 
     @Column({ type: "numeric", nullable: false })
     @IsNotEmpty()

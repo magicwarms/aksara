@@ -4,49 +4,52 @@
 import { ValidationError } from "class-validator";
 import isEmpty from "lodash/isEmpty";
 import { UpdateResult } from "typeorm";
+import crypto from "crypto";
 
 import validation from "../../config/validation";
 
-import { PaymentMethod } from "./entity/PaymentMethod";
+// import { PaymentMethod } from "./entity/PaymentMethod";
 import { Payment } from "./entity/Payment";
 import * as PaymentRepository from "./payment.repository";
-import { checkStatusCode, setNanoId, setStatusMessageCallback } from "../../utilities/helper";
+import { checkStatusCode, currentFormattedDateTime, setNanoId, setStatusMessageCallback } from "../../utilities/helper";
 import axios from "axios";
-import { responsePayment, transactionData } from "./payment.interface";
+import { responsePayment, responsePaymentStatus, transactionData } from "./payment.interface";
 import { Md5 } from "ts-md5/dist/md5";
 import paymentConfig from "../../config/payment";
 import { StatusCode, StatusMessage } from "./payment.enum";
-import { storeOrUpdateCreditUser } from "../credits/credit.service";
+import { storeOrUpdateCreditUser, storeCreditTransaction, getCreditUser } from "../credits/credit.service";
+import { StatusHistory } from "../credits/credit.enum";
 
 /**
  * Service Methods
  */
 
-export const getAllPaymentMethod = async (): Promise<PaymentMethod[]> => {
-    let getAllPaymentMethod = await PaymentRepository.getAllPaymentMethod();
+const getAllPaymentMethodDuitku = async (amount: number) => {
+    const endpoint: string = paymentConfig.endpointGetPaymentMethodUrl;
+    const datetime = currentFormattedDateTime();
+    const hashString = `${paymentConfig.merchantCode}${Number(amount)}${datetime}${paymentConfig.merchantKey}`;
+    const getPaymentMethodDuitku = await axios({
+        url: endpoint,
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        data: {
+            merchantcode: paymentConfig.merchantCode,
+            amount: Number(amount),
+            datetime,
+            signature: crypto.createHash("sha256").update(hashString, "utf-8").digest("hex"),
+        },
+    });
+
+    if (getPaymentMethodDuitku.status !== 200) throw new Error("get all payment method error");
+    return getPaymentMethodDuitku.data;
+};
+
+export const getAllPaymentMethod = async (amount: number): Promise<any | Error> => {
+    let getAllPaymentMethod = await getAllPaymentMethodDuitku(amount);
     if (getAllPaymentMethod.length < 0) getAllPaymentMethod = [];
     return getAllPaymentMethod;
-};
-
-export const storeOrUpdatePaymentMethod = async (
-    paymentMethodData: PaymentMethod
-): Promise<PaymentMethod | ValidationError[]> => {
-    const paymentMethod = new PaymentMethod();
-    paymentMethod.id = isEmpty(paymentMethodData.id) ? undefined : paymentMethodData.id;
-    paymentMethod.name = paymentMethodData.name.toUpperCase();
-    paymentMethod.fullname = paymentMethodData.fullname;
-    paymentMethod.isActive = paymentMethodData.isActive;
-
-    const validateData = await validation(paymentMethod);
-    if (validateData.length > 0) return validateData;
-
-    const storeOrUpdatePaymentMethod = await PaymentRepository.storeOrUpdatePaymentMethod(paymentMethod);
-
-    return storeOrUpdatePaymentMethod;
-};
-
-export const deletePaymentMethod = async (id: string): Promise<UpdateResult> => {
-    return await PaymentRepository.deletePaymentMethod(id);
 };
 
 const requestTransactionDuitKu = async (data: transactionData) => {
@@ -93,13 +96,9 @@ export const storePayment = async (
     const returnUrl: string = paymentConfig.returnUrl;
     const callbackUrl: string = paymentConfig.callbackUrl;
 
-    const grandtotalPayment = Number(paymentData.grandtotal);
+    const grandtotalPayment = Number(paymentData.amountCreditPrice);
     const orderDescription = `Payment for purchase ${paymentData.credits} credits`;
     const fullnameSplit = user.userFullname.split(" ");
-
-    const paymentMethodCodeName = paymentData.paymentMethod.name.toUpperCase();
-    const getPaymentMethodCodeName = await PaymentRepository.getPaymentPaymentMethodByCodeName(paymentMethodCodeName);
-    if (isEmpty(getPaymentMethodCodeName)) throw new Error("Payment code name not found");
 
     const transactionData: transactionData = {
         merchantCode: merchantCodeData,
@@ -107,13 +106,13 @@ export const storePayment = async (
         merchantOrderId: transactionCode,
         productDetails: orderDescription,
         email: user.userEmail,
-        paymentMethod: getPaymentMethodCodeName!.name,
+        paymentMethod: paymentData.payment.paymentMethod,
         customerVaName: user.userFullname,
         itemDetails: [
             {
                 name: orderDescription,
-                quantity: paymentData.credits,
-                price: Number(paymentData.amountCreditPrice),
+                quantity: Number(paymentData.credits),
+                price: grandtotalPayment,
             },
         ],
         customerDetail: {
@@ -124,7 +123,7 @@ export const storePayment = async (
         returnUrl,
         callbackUrl,
         signature: Md5.hashStr(`${merchantCodeData}${transactionCode}${grandtotalPayment}${merchantKeyData}`),
-        expiryPeriod: 1, // in minutes
+        expiryPeriod: 60, // in minutes
     };
 
     const paymentRequest = await requestTransactionDuitKu(transactionData);
@@ -132,14 +131,18 @@ export const storePayment = async (
     const payment = new Payment();
     payment.userId = user.userId;
     payment.transactionCode = transactionCode;
-    payment.paymentMethod = { name: getPaymentMethodCodeName!.name, fullname: getPaymentMethodCodeName!.fullname };
+    payment.payment = {
+        paymentMethod: paymentData.payment.paymentMethod,
+        paymentName: paymentData.payment.paymentName,
+    };
     payment.amountCreditPrice = paymentData.amountCreditPrice;
     payment.orderDescription = orderDescription;
     payment.itemDetails = transactionData.itemDetails;
     payment.referenceDuitKuId = paymentRequest.reference;
     payment.credits = paymentData.credits;
-    payment.status = StatusCode.PROCESS;
-    payment.statusMessage = StatusMessage.PROCESS;
+    payment.status = StatusCode.FAILED_PENDING;
+    payment.statusMessage = StatusMessage.FAILED_PENDING;
+    payment.fee = paymentData.fee;
     payment.grandtotal = grandtotalPayment;
 
     const validateData = await validation(payment);
@@ -156,12 +159,14 @@ export const updateStatusPayment = async (updateStatusPayment: {
 }): Promise<UpdateResult> => {
     const checkReferenceId = await PaymentRepository.getPaymentByReferenceId(updateStatusPayment.reference);
     if (isEmpty(checkReferenceId)) throw new Error("Reference code not found");
+    if (checkReferenceId?.status === "00") throw new Error("This transaction has been successfully completed");
 
     const paymentUpdate = new Payment();
     paymentUpdate.referenceDuitKuId = updateStatusPayment.reference;
     const checkStatus = checkStatusCode(updateStatusPayment.resultCode);
     if (checkStatus === "ERROR") throw new Error("Status code unidentified");
     paymentUpdate.status = checkStatus;
+
     const checkStatusMessage = setStatusMessageCallback(checkStatus);
     if (checkStatusMessage === "ERROR") throw new Error("Status message unidentified");
     paymentUpdate.statusMessage = checkStatusMessage;
@@ -169,23 +174,31 @@ export const updateStatusPayment = async (updateStatusPayment: {
 
     if (updateStatusPaymentData.affected) {
         if (checkStatus === "00") {
-            // TO-DO
-            // TEST LAGI INI NANTI
+            //get credit user first
+            const getCredit = await getCreditUser(checkReferenceId?.userId!);
             const setCreditUser = await storeOrUpdateCreditUser({
                 userId: checkReferenceId?.userId!,
-                credit: checkReferenceId?.credits!,
+                credit: Number(checkReferenceId?.credits!) + Number(getCredit?.credit),
             });
             if (setCreditUser) {
-                //TO-DO
-                // simpan transaksi credits disini
+                const storeCreditTrx = {
+                    userId: checkReferenceId?.userId!,
+                    usage: 0,
+                    completionId: null,
+                    remainingCredits: checkReferenceId?.credits!,
+                    status: StatusHistory.ADDED,
+                };
+                storeCreditTransaction(storeCreditTrx);
             }
+            // TO-DO
+            // kirim notifikasi nanti disini wak
         }
     }
 
-    return;
+    return updateStatusPaymentData;
 };
 
-export const checkTransaction = async (transactionCode: string): Promise<UpdateResult> => {
+export const checkTransaction = async (transactionCode: string): Promise<responsePaymentStatus> => {
     const merchantCodeData: string = paymentConfig.merchantCode;
     const merchantKeyData: string = paymentConfig.merchantKey;
 
@@ -194,5 +207,7 @@ export const checkTransaction = async (transactionCode: string): Promise<UpdateR
         merchantOrderId: transactionCode,
         signature: Md5.hashStr(`${merchantCodeData}${transactionCode}${merchantKeyData}`),
     };
-    return await checkTransactionDuitKu(data);
+    const checkStatusPayment = await checkTransactionDuitKu(data);
+    await updateStatusPayment({ reference: checkStatusPayment.reference, resultCode: checkStatusPayment.statusCode });
+    return checkStatusPayment;
 };

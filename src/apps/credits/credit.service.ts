@@ -6,6 +6,7 @@ import validation from "../../config/validation";
 
 import * as CreditRepository from "./credit.repository";
 import { Credit } from "./entity/Credit";
+import { CreditTransaction } from "./entity/CreditTransaction";
 
 /**
  * Service Methods
@@ -23,4 +24,18 @@ export const storeOrUpdateCreditUser = async (data: Credit) => {
     if (validateData.length > 0) return validateData;
 
     return await CreditRepository.storeOrUpdateCreditUser(credit);
+};
+
+export const storeCreditTransaction = async (data: CreditTransaction) => {
+    const creditTrx = new CreditTransaction();
+    creditTrx.userId = data.userId;
+    creditTrx.usage = data.usage;
+    creditTrx.completionId = data.completionId ? data.completionId : null;
+    creditTrx.remainingCredits = data.remainingCredits;
+    creditTrx.status = data.status;
+
+    const validateData = await validation(creditTrx);
+    if (validateData.length > 0) return validateData;
+
+    return await CreditRepository.storeCreditTransaction(creditTrx);
 };

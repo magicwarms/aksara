@@ -23,4 +23,8 @@ export default {
         process.env.NODE_ENV === "production"
             ? process.env.DUITKU_API_ENDPOINT_CHECK_TRANSACTION_PROD!
             : process.env.DUITKU_API_ENDPOINT_CHECK_TRANSACTION_DEV!,
+    endpointGetPaymentMethodUrl:
+        process.env.NODE_ENV === "production"
+            ? process.env.DUITKU_API_ENDPOINT_GET_PAYMENTMETHOD_PROD!
+            : process.env.DUITKU_API_ENDPOINT_GET_PAYMENTMETHOD_DEV!,
 };
