@@ -58,14 +58,17 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
     try {
         // ini untuk bayar pakai virtual account hanya dikirim transaksi sukses saja
         // gak berjalan jika masih localhost
-        await PaymentService.updateStatusPayment({
+        const processPaymentData = await PaymentService.updatePaymentStatus({
             reference: String(req.body.reference),
             resultCode: String(req.body.resultCode),
         });
         return res.status(200).json({
             success: true,
-            data: {},
-            message: `Payment data successfully processed`,
+            data: typeof processPaymentData === "string" ? {} : processPaymentData,
+            message:
+                typeof processPaymentData === "string"
+                    ? processPaymentData
+                    : `Payment data has been successfully processed`,
         });
     } catch (err) {
         next(err);
@@ -107,8 +110,8 @@ export const checkTransaction = async (
         const checkTransaction = await PaymentService.checkTransaction(transactionCode);
         return res.status(200).json({
             success: true,
-            data: checkTransaction,
-            message: `Payment status successfully found`,
+            data: typeof checkTransaction === "string" ? {} : checkTransaction,
+            message: typeof checkTransaction === "string" ? checkTransaction : `Payment status successfully found`,
         });
     } catch (err) {
         next(err);

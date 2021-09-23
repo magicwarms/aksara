@@ -8,7 +8,6 @@ import crypto from "crypto";
 
 import validation from "../../config/validation";
 
-// import { PaymentMethod } from "./entity/PaymentMethod";
 import { Payment } from "./entity/Payment";
 import * as PaymentRepository from "./payment.repository";
 import { checkStatusCode, currentFormattedDateTime, setNanoId, setStatusMessageCallback } from "../../utilities/helper";
@@ -140,40 +139,40 @@ export const storePayment = async (
     payment.itemDetails = transactionData.itemDetails;
     payment.referenceDuitKuId = paymentRequest.reference;
     payment.credits = paymentData.credits;
-    payment.status = StatusCode.FAILED_PENDING;
-    payment.statusMessage = StatusMessage.FAILED_PENDING;
+    payment.status = StatusCode.PROCESS;
+    payment.statusMessage = StatusMessage.PROCESS;
     payment.fee = paymentData.fee;
-    payment.grandtotal = grandtotalPayment;
+    payment.grandtotal = grandtotalPayment + paymentData.fee;
 
     const validateData = await validation(payment);
     if (validateData.length > 0) return validateData;
 
     const storePayment = await PaymentRepository.storePayment(payment);
     if (!storePayment) throw new Error("Store payment data error");
-    return paymentRequest;
+    return { ...paymentRequest, transactionCode: storePayment.transactionCode };
 };
 
-export const updateStatusPayment = async (updateStatusPayment: {
+export const updatePaymentStatus = async (updatePaymentStatus: {
     reference: string;
     resultCode: string;
-}): Promise<UpdateResult> => {
-    const checkReferenceId = await PaymentRepository.getPaymentByReferenceId(updateStatusPayment.reference);
+}): Promise<UpdateResult | string> => {
+    const checkReferenceId = await PaymentRepository.getPaymentByReferenceId(updatePaymentStatus.reference);
     if (isEmpty(checkReferenceId)) throw new Error("Reference code not found");
-    if (checkReferenceId?.status === "00") throw new Error("This transaction has been successfully completed");
+    if (checkReferenceId?.status === StatusCode.SUCCESS) return "This transaction has been successfully completed";
 
     const paymentUpdate = new Payment();
-    paymentUpdate.referenceDuitKuId = updateStatusPayment.reference;
-    const checkStatus = checkStatusCode(updateStatusPayment.resultCode);
+    paymentUpdate.referenceDuitKuId = updatePaymentStatus.reference;
+    const checkStatus = checkStatusCode(updatePaymentStatus.resultCode);
     if (checkStatus === "ERROR") throw new Error("Status code unidentified");
     paymentUpdate.status = checkStatus;
 
     const checkStatusMessage = setStatusMessageCallback(checkStatus);
     if (checkStatusMessage === "ERROR") throw new Error("Status message unidentified");
     paymentUpdate.statusMessage = checkStatusMessage;
-    const updateStatusPaymentData = await PaymentRepository.updateStatusPayment(paymentUpdate);
+    const updatePaymentStatusData = await PaymentRepository.updatePaymentStatus(paymentUpdate);
 
-    if (updateStatusPaymentData.affected) {
-        if (checkStatus === "00") {
+    if (updatePaymentStatusData.affected) {
+        if (checkStatus === StatusCode.SUCCESS) {
             //get credit user first
             const getCredit = await getCreditUser(checkReferenceId?.userId!);
             const setCreditUser = await storeOrUpdateCreditUser({
@@ -192,13 +191,15 @@ export const updateStatusPayment = async (updateStatusPayment: {
             }
             // TO-DO
             // kirim notifikasi nanti disini wak
+        } else {
+            return `Your payment ${checkReferenceId?.statusMessage}`;
         }
     }
 
-    return updateStatusPaymentData;
+    return updatePaymentStatusData;
 };
 
-export const checkTransaction = async (transactionCode: string): Promise<responsePaymentStatus> => {
+export const checkTransaction = async (transactionCode: string): Promise<responsePaymentStatus | string> => {
     const merchantCodeData: string = paymentConfig.merchantCode;
     const merchantKeyData: string = paymentConfig.merchantKey;
 
@@ -208,6 +209,10 @@ export const checkTransaction = async (transactionCode: string): Promise<respons
         signature: Md5.hashStr(`${merchantCodeData}${transactionCode}${merchantKeyData}`),
     };
     const checkStatusPayment = await checkTransactionDuitKu(data);
-    await updateStatusPayment({ reference: checkStatusPayment.reference, resultCode: checkStatusPayment.statusCode });
+    const updatePaymentStatusData = await updatePaymentStatus({
+        reference: checkStatusPayment.reference,
+        resultCode: checkStatusPayment.statusCode,
+    });
+    if (typeof updatePaymentStatusData === "string") return updatePaymentStatusData;
     return checkStatusPayment;
 };

@@ -13,7 +13,9 @@ export const setStatusMessageCallback = (statusCode: string): StatusMessage | st
     if (statusCode === "00") {
         statusMsg = StatusMessage.SUCCESS;
     } else if (statusCode === "01") {
-        statusMsg = StatusMessage.FAILED_PENDING;
+        statusMsg = StatusMessage.FAILED;
+    } else if (statusCode === "02") {
+        statusMsg = StatusMessage.PROCESS;
     } else {
         return "ERROR";
     }
@@ -25,7 +27,9 @@ export const checkStatusCode = (status: string): StatusCode | string => {
     if (status === "00") {
         statusCode = StatusCode.SUCCESS;
     } else if (status === "01") {
-        statusCode = StatusCode.FAILED_PENDING;
+        statusCode = StatusCode.FAILED;
+    } else if (statusCode === "02") {
+        statusCode = StatusMessage.PROCESS;
     } else {
         return "ERROR";
     }

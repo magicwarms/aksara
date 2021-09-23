@@ -1,9 +1,11 @@
 export enum StatusCode {
     SUCCESS = "00",
-    FAILED_PENDING = "01",
+    FAILED = "01",
+    PROCESS = "02",
 }
 
 export enum StatusMessage {
     SUCCESS = "SUCCESS",
-    FAILED_PENDING = "FAILED/PENDING",
+    FAILED = "FAILED",
+    PROCESS = "PROCESS",
 }

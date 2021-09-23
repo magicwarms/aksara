@@ -11,7 +11,7 @@ export const storePayment = async (paymentData: Payment): Promise<Payment> => {
     return storePayment;
 };
 
-export const updateStatusPayment = async (paymentUpdate: {
+export const updatePaymentStatus = async (paymentUpdate: {
     referenceDuitKuId: string;
     status: string;
     statusMessage: string;
@@ -25,6 +25,6 @@ export const updateStatusPayment = async (paymentUpdate: {
 export const getPaymentByReferenceId = async (reference: string) => {
     return await getRepository(Payment).findOne({
         where: { referenceDuitKuId: reference },
-        select: ["id", "userId", "credits", "status"],
+        select: ["id", "userId", "credits", "status", "statusMessage"],
     });
 };
