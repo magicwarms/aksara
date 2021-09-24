@@ -223,5 +223,13 @@ export const getAllPaymentHistory = async (data: {
 }): Promise<Payment[]> => {
     let getAllPaymentHistory = await PaymentRepository.getAllPaymentHistory(data);
     if (getAllPaymentHistory.length < 0) getAllPaymentHistory = [];
+    getAllPaymentHistory = getAllPaymentHistory.map((item) => {
+        return {
+            ...item,
+            credits: Number(item.credits),
+            fee: Number(item.fee),
+            grandtotal: Number(item.grandtotal),
+        };
+    });
     return getAllPaymentHistory;
 };

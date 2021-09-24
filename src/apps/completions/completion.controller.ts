@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as CompletionService from "./completion.service";
 
 export const getAllCompletion = async (_req: Request, res: Response, _next: NextFunction) => {
@@ -9,7 +8,7 @@ export const getAllCompletion = async (_req: Request, res: Response, _next: Next
     return res.status(200).json({
         success: true,
         data: userCompletions,
-        message: "Completion data found",
+        message: userCompletions.length > 0 ? "Completion data found" : "Completion data not found",
     });
 };
 
@@ -26,8 +25,8 @@ export const storeCompletion = async (req: Request, res: Response, next: NextFun
         }
         return res.status(200).json({
             success: true,
-            data: storeCompletion,
-            message: `Completion successfully saved`,
+            data: typeof storeCompletion === "string" ? {} : storeCompletion,
+            message: typeof storeCompletion === "string" ? storeCompletion : `Completion has been saved`,
         });
     } catch (err) {
         next(err);

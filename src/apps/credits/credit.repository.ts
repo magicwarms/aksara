@@ -1,4 +1,4 @@
-import { getConnection, getRepository } from "typeorm";
+import { getConnection } from "typeorm";
 import { Credit } from "./entity/Credit";
 import { CreditTransaction } from "./entity/CreditTransaction";
 /**
@@ -6,7 +6,15 @@ import { CreditTransaction } from "./entity/CreditTransaction";
  */
 
 export const getCreditUser = async (userId: string) => {
-    return await getRepository(Credit).findOne({ where: { userId } });
+    const getCreditUser = await getConnection().transaction(async (transactionalEntityManager) => {
+        return await transactionalEntityManager
+            .getRepository(Credit)
+            .createQueryBuilder("credit")
+            .setLock("pessimistic_read")
+            .where({ userId })
+            .getOne();
+    });
+    return getCreditUser;
 };
 
 export const storeOrUpdateCreditUser = async (data: Credit) => {

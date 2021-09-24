@@ -1,8 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from "typeorm";
 
 import { Length, IsNotEmpty } from "class-validator";
 import { featureCompletion, resultCompletion, basicDataCompletion } from "../completion.interface";
-import { User } from "../../users/entity/User";
 
 @Entity()
 @Index(["id", "userId"])
@@ -30,10 +29,6 @@ export class Completion {
     @Column({ type: "varchar", nullable: false })
     @IsNotEmpty()
     userId!: string;
-
-    @ManyToOne(() => User)
-    @JoinColumn({ name: "userId" })
-    user!: User;
 
     @Column("jsonb", { nullable: false })
     feature!: featureCompletion;

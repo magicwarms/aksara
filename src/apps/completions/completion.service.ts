@@ -7,6 +7,9 @@ import validation from "../../config/validation";
 
 import { Completion } from "./entity/Completion";
 import * as CompletionRepository from "./completion.repository";
+import { getCreditUser, storeCreditTransaction, storeOrUpdateCreditUser } from "../credits/credit.service";
+import { StatusHistory } from "../credits/credit.enum";
+import { isEmpty } from "lodash";
 
 /**
  * Service Methods
@@ -27,7 +30,14 @@ export const getAllCompletion = async (userId: string): Promise<Completion[]> =>
 export const storeCompletion = async (
     completionData: Completion,
     userId: string
-): Promise<Completion | ValidationError[]> => {
+): Promise<Completion | ValidationError[] | string> => {
+    //get credit user first
+    const getUserCredit = await getCreditUser(userId);
+    if (isEmpty(getUserCredit)) return "Something went wrong! user credit not found";
+    if (getUserCredit?.credit! < completionData.tokenUsage!) return "You don't have enough tokens";
+
+    const tokenUsage: number = Number(completionData.tokenUsage);
+
     const completion = new Completion();
     completion.prompt = completionData.prompt;
     completion.language = completionData.language;
@@ -39,13 +49,27 @@ export const storeCompletion = async (
     completion.to = completionData.to;
     completion.theme = completionData.theme;
     completion.brief = completionData.brief;
-    completion.count = completionData.count;
-    completion.tokenUsage = completionData.tokenUsage;
+    completion.count = Number(completionData.count);
+    completion.tokenUsage = tokenUsage;
 
     const validateData = await validation(completion);
     if (validateData.length > 0) return validateData;
 
     const storeCompletion = await CompletionRepository.storeCompletion(completion);
-
+    if (storeCompletion) {
+        // kurangin credit disini
+        const remainingCredits: number = getUserCredit?.credit! - tokenUsage;
+        const storeCreditTrx = {
+            userId: userId!,
+            usage: tokenUsage,
+            completionId: storeCompletion.id,
+            remainingCredits,
+            status: StatusHistory.USED,
+        };
+        Promise.all([
+            storeCreditTransaction(storeCreditTrx),
+            storeOrUpdateCreditUser({ userId, credit: remainingCredits }),
+        ]);
+    }
     return storeCompletion;
 };

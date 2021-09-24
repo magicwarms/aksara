@@ -11,7 +11,6 @@ export const getAllCompletion = async (userId: string) => {
             id: `usercompletion-${userId}`,
             milliseconds: 300000,
         },
-        relations: ["user"],
     });
 };
 

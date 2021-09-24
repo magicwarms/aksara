@@ -30,6 +30,6 @@ router.use("/feature-subcategory", [verifyToken], featureSubCategoryRouter);
 router.use("/user", userRouter);
 router.use("/completion", [verifyToken], completionRouter);
 router.use("/payment", paymentRouter);
-router.use("/credit", creditRouter);
+router.use("/credit", [verifyToken], creditRouter);
 
 export default router;

@@ -55,6 +55,6 @@ export class FeatureCategory {
     @UpdateDateColumn({ type: "timestamp with time zone" })
     updatedDate?: Date;
 
-    @DeleteDateColumn({ type: "timestamp with time zone" })
+    @DeleteDateColumn({ type: "timestamp with time zone", select: false })
     deletedDate?: Date;
 }

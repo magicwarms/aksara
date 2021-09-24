@@ -1,17 +1,6 @@
-import {
-    Entity,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    Index,
-    JoinColumn,
-    OneToOne,
-    PrimaryColumn,
-    Generated,
-} from "typeorm";
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, Index, PrimaryColumn, Generated } from "typeorm";
 
 import { IsNotEmpty } from "class-validator";
-import { User } from "../../users/entity/User";
 
 @Entity()
 @Index(["id", "userId"])
@@ -23,10 +12,6 @@ export class Credit {
     @PrimaryColumn()
     @IsNotEmpty()
     userId!: string;
-
-    @OneToOne(() => User, { eager: true })
-    @JoinColumn()
-    user?: User;
 
     @Column({ type: "numeric", nullable: false })
     @IsNotEmpty()
