@@ -10,6 +10,7 @@ import featureSubCategoryRouter from "./apps/feature_subcategories/featuresubcat
 import completionRouter from "./apps/completions/completion.router";
 import paymentRouter from "./apps/payments/payment.router";
 import creditRouter from "./apps/credits/credit.router";
+import favoriteRouter from "./apps/favorites/favorite.router";
 
 import { verifyToken, verifyAdminAccess } from "./apps/middlewares";
 /**
@@ -31,5 +32,6 @@ router.use("/user", userRouter);
 router.use("/completion", [verifyToken], completionRouter);
 router.use("/payment", paymentRouter);
 router.use("/credit", [verifyToken], creditRouter);
+router.use("/favorite", [verifyToken], favoriteRouter);
 
 export default router;
