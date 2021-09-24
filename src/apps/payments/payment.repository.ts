@@ -1,5 +1,7 @@
+import { isEmpty } from "lodash";
 import { getConnection, getRepository, UpdateResult } from "typeorm";
 import { Payment } from "./entity/Payment";
+import { StatusMessage } from "./payment.enum";
 /**
  * Repository Methods
  */
@@ -27,4 +29,11 @@ export const getPaymentByReferenceId = async (reference: string) => {
         where: { referenceDuitKuId: reference },
         select: ["id", "userId", "credits", "status", "statusMessage"],
     });
+};
+
+export const getAllPaymentHistory = async (data: { paymentStatus: StatusMessage | undefined; userId: string }) => {
+    const paymentQuery = isEmpty(data.paymentStatus)
+        ? { where: { userId: data.userId } }
+        : { where: { statusMessage: data.paymentStatus, userId: data.userId } };
+    return await getRepository(Payment).find(paymentQuery);
 };

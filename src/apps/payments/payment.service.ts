@@ -158,7 +158,7 @@ export const updatePaymentStatus = async (updatePaymentStatus: {
 }): Promise<UpdateResult | string> => {
     const checkReferenceId = await PaymentRepository.getPaymentByReferenceId(updatePaymentStatus.reference);
     if (isEmpty(checkReferenceId)) throw new Error("Reference code not found");
-    if (checkReferenceId?.status === StatusCode.SUCCESS) return "This transaction has been successfully completed";
+    if (checkReferenceId?.status === StatusCode.SUCCESS) return "This transaction has been completed";
 
     const paymentUpdate = new Payment();
     paymentUpdate.referenceDuitKuId = updatePaymentStatus.reference;
@@ -215,4 +215,13 @@ export const checkTransaction = async (transactionCode: string): Promise<respons
     });
     if (typeof updatePaymentStatusData === "string") return updatePaymentStatusData;
     return checkStatusPayment;
+};
+
+export const getAllPaymentHistory = async (data: {
+    paymentStatus: StatusMessage | undefined;
+    userId: string;
+}): Promise<Payment[]> => {
+    let getAllPaymentHistory = await PaymentRepository.getAllPaymentHistory(data);
+    if (getAllPaymentHistory.length < 0) getAllPaymentHistory = [];
+    return getAllPaymentHistory;
 };

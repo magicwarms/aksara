@@ -19,5 +19,6 @@ paymentRouter.post("/pay", [verifyToken], PaymentController.storePayment);
 paymentRouter.post("/process", PaymentController.processPayment);
 paymentRouter.get("/return", PaymentController.processReturnPayment);
 paymentRouter.get("/check", [verifyToken], PaymentController.checkTransaction);
+paymentRouter.get("/history", [verifyToken], PaymentController.getAllPaymentHistory);
 
 export default paymentRouter;

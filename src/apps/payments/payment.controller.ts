@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { isEmpty } from "lodash";
-import { queryCheckTrxPayment, queryGetAllPaymentMethod } from "./payment.interface";
+import { StatusMessage } from "./payment.enum";
+import { queryCheckTrxPayment, queryGetAllPaymentHistory, queryGetAllPaymentMethod } from "./payment.interface";
 
 import * as PaymentService from "./payment.service";
 
@@ -31,6 +32,25 @@ export const getAllPaymentMethod = async (
     }
 };
 
+export const getAllPaymentHistory = async (
+    req: Request<{}, {}, {}, queryGetAllPaymentHistory>,
+    res: Response,
+    next: NextFunction
+) => {
+    const paymentStatus: StatusMessage | undefined = req.query.status;
+    const userId: string = res.locals.userId;
+    try {
+        const paymentHistory = await PaymentService.getAllPaymentHistory({ paymentStatus, userId });
+        return res.status(200).json({
+            success: true,
+            data: paymentHistory,
+            message: paymentHistory.length > 0 ? "Payment history data found" : "Payment history data not found",
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export const storePayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId: string = res.locals.userId;
@@ -47,7 +67,7 @@ export const storePayment = async (req: Request, res: Response, next: NextFuncti
         return res.status(200).json({
             success: true,
             data: { storePayment },
-            message: `Payment data successfully saved`,
+            message: `Payment data has been saved`,
         });
     } catch (err) {
         next(err);
@@ -65,10 +85,7 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
         return res.status(200).json({
             success: true,
             data: typeof processPaymentData === "string" ? {} : processPaymentData,
-            message:
-                typeof processPaymentData === "string"
-                    ? processPaymentData
-                    : `Payment data has been successfully processed`,
+            message: typeof processPaymentData === "string" ? processPaymentData : `Payment data has been processed`,
         });
     } catch (err) {
         next(err);

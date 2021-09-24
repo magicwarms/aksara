@@ -1,9 +1,15 @@
+import { StatusMessage } from "./payment.enum";
+
 export interface queryCheckTrxPayment {
     transactionCode: string;
 }
 
 export interface queryGetAllPaymentMethod {
     amount: number;
+}
+
+export interface queryGetAllPaymentHistory {
+    status?: StatusMessage;
 }
 
 export interface itemDetails {
