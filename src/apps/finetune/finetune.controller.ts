@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { deleteFile } from "../../utilities/file";
 
-import logger from "../../config/logger";
-
 import * as FineTuneService from "./finetune.service";
 
 export const convert = async (req: Request, res: Response, next: NextFunction) => {

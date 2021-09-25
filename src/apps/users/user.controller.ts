@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as UserService from "./user.service";
 
 export const getAllUser = async (_req: Request, res: Response) => {

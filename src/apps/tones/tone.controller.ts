@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as ToneService from "./tone.service";
 import { queryFindToneData } from "./tone.interface";
 

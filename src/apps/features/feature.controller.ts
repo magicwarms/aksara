@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import logger from "../../config/logger";
 import * as FeatureService from "./feature.service";
 import { queryFindFeatureData } from "./feature.interface";
 
