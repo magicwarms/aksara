@@ -15,7 +15,7 @@ export const getAllUser = async () => {
     });
 };
 
-export const getUserProfile = async (id: String) => {
+export const getUserProfile = async (id: string) => {
     return await getRepository(User).findOne({
         where: { id },
         cache: {

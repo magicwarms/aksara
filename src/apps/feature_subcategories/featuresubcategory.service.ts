@@ -1,17 +1,16 @@
 /**
  * Data Model Interfaces
  */
-import { ValidationError } from "class-validator";
-import isEmpty from "lodash/isEmpty";
-import { UpdateResult } from "typeorm";
+import { ValidationError } from 'class-validator';
+import isEmpty from 'lodash/isEmpty';
+import { UpdateResult } from 'typeorm';
 
-import validation from "../../config/validation";
-import { normalizeKey } from "../../utilities/helper";
-import { FeatureCategory } from "../feature_categories/entity/FeatureCategory";
+import validation from '../../config/validation';
+import { normalizeKey } from '../../utilities/helper';
 
-import { FeatureSubCategory } from "./entity/FeatureSubCategory";
-import * as FeatureSubCategoryRepository from "./featuresubcategory.repository";
-import * as FeatureCategoryRepository from "../feature_categories/featurecategory.repository";
+import { FeatureSubCategory } from './entity/FeatureSubCategory';
+import * as FeatureSubCategoryRepository from './featuresubcategory.repository';
+import * as FeatureCategoryRepository from '../feature_categories/featurecategory.repository';
 /**
  * Service Methods
  */
@@ -26,18 +25,19 @@ export const getAllFeatureSubCategories = async (
 
 export const storeOrUpdateFeatureSubCategory = async (
     featureSubCategoryData: FeatureSubCategory
-): Promise<FeatureSubCategory | ValidationError[]> => {
+): Promise<FeatureSubCategory | ValidationError[] | string> => {
     const featureSubCategory = new FeatureSubCategory();
 
-    const getSubCategoryData: FeatureCategory | undefined = await FeatureCategoryRepository.getFeatureCategory(
+    const getFeatureCategoryData = await FeatureCategoryRepository.getFeatureCategory(
         featureSubCategoryData.featureCategoryId
     );
+    if (isEmpty(getFeatureCategoryData)) return "Feature category data can't empty";
 
     featureSubCategory.id = isEmpty(featureSubCategoryData.id) ? undefined : featureSubCategoryData.id;
     featureSubCategory.key = normalizeKey(featureSubCategoryData.name.us);
     featureSubCategory.name = featureSubCategoryData.name;
     featureSubCategory.featureCategoryId = featureSubCategoryData.featureCategoryId;
-    featureSubCategory.featureCategoryKey = getSubCategoryData?.key!;
+    featureSubCategory.featureCategoryKey = getFeatureCategoryData?.key ?? '';
     featureSubCategory.isActive = featureSubCategoryData.isActive;
 
     const validateData = await validation(featureSubCategory);

@@ -1,21 +1,21 @@
-import { getConnection, getRepository, UpdateResult } from "typeorm";
-import { Favorite } from "./entity/Favorite";
+import { getConnection, getRepository, UpdateResult } from 'typeorm';
+import { Favorite } from './entity/Favorite';
 /**
  * Repository Methods
  */
 
-export const getAllFavorite = async (userId: string) => {
+export const getAllFavorite = async (userId: string): Promise<Favorite[]> => {
     return await getRepository(Favorite).find({
         where: { userId },
-        relations: ["completion"],
+        relations: ['completion'],
         cache: {
             id: `userfavorites-${userId}`,
-            milliseconds: 300000,
-        },
+            milliseconds: 300000
+        }
     });
 };
 
-export const storeOrUpdateFavorite = async (data: Favorite) => {
+export const storeOrUpdateFavorite = async (data: Favorite): Promise<Favorite> => {
     getConnection().queryResultCache?.remove([`userfavorites-${data.userId}`]);
     return await getRepository(Favorite).save(data);
 };

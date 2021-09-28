@@ -2,11 +2,12 @@
  * Data Model Interfaces
  */
 
-import validation from "../../config/validation";
+import { ValidationError } from 'class-validator';
+import validation from '../../config/validation';
 
-import * as CreditRepository from "./credit.repository";
-import { Credit } from "./entity/Credit";
-import { CreditTransaction } from "./entity/CreditTransaction";
+import * as CreditRepository from './credit.repository';
+import { Credit } from './entity/Credit';
+import { CreditTransaction } from './entity/CreditTransaction';
 
 /**
  * Service Methods
@@ -15,7 +16,7 @@ export const getCreditUser = async (userId: string): Promise<Credit | undefined>
     return await CreditRepository.getCreditUser(userId);
 };
 
-export const storeOrUpdateCreditUser = async (data: Credit) => {
+export const storeOrUpdateCreditUser = async (data: Credit): Promise<Credit | ValidationError[]> => {
     const credit = new Credit();
     credit.userId = data.userId;
     credit.credit = data.credit;
@@ -26,7 +27,9 @@ export const storeOrUpdateCreditUser = async (data: Credit) => {
     return await CreditRepository.storeOrUpdateCreditUser(credit);
 };
 
-export const storeCreditTransaction = async (data: CreditTransaction) => {
+export const storeCreditTransaction = async (
+    data: CreditTransaction
+): Promise<CreditTransaction | ValidationError[]> => {
     const creditTrx = new CreditTransaction();
     creditTrx.userId = data.userId;
     creditTrx.usage = data.usage;

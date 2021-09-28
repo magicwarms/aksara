@@ -1,31 +1,24 @@
-import { NextFunction, Request, Response } from "express";
-import { deleteFile } from "../../utilities/file";
+import { NextFunction, Request, Response } from 'express';
+import { deleteFile } from '../../utilities/file';
 
-import * as FineTuneService from "./finetune.service";
+import * as FineTuneService from './finetune.service';
 
-export const convert = async (req: Request, res: Response, next: NextFunction) => {
-    if (res.locals.role !== "admin") {
-        return res.status(401).json({
-            success: false,
-            data: {},
-            message: "You don't have any role permission to access this API",
-        });
-    }
+export const convert = async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
     try {
-        const filePath = "temp/" + req.file?.filename;
-        if (req.file?.mimetype !== "text/csv" && req.file?.mimetype !== "application/octet-stream") {
+        const filePath = 'temp/' + req.file?.filename;
+        if (req.file?.mimetype !== 'text/csv' && req.file?.mimetype !== 'application/octet-stream') {
             deleteFile(filePath);
             return res.status(422).json({
                 success: false,
                 data: {},
-                message: "Please upload csv file only",
+                message: 'Please upload csv file only'
             });
         }
-        if (typeof req.body.isCSV === "undefined" || req.body.isCSV === null || req.body.isCSV === "") {
+        if (typeof req.body.isCSV === 'undefined' || req.body.isCSV === null || req.body.isCSV === '') {
             return res.status(422).json({
                 success: false,
                 data: {},
-                message: "CSV value is required",
+                message: 'CSV value is required'
             });
         }
         const convertProcess = await FineTuneService.convertCsvToJsonLine(req);
@@ -33,73 +26,64 @@ export const convert = async (req: Request, res: Response, next: NextFunction) =
             return res.status(500).json({
                 success: false,
                 data: {},
-                message: "Convert process error",
+                message: 'Convert process error'
             });
         }
         return res.status(200).json({
             success: true,
             data: {},
-            message: "Successfully Converted",
+            message: 'Successfully Converted'
         });
     } catch (err) {
         next(err);
     }
 };
 
-export const listUploadedOpenAIFile = async (_req: Request, res: Response, next: NextFunction) => {
-    if (res.locals.role !== "admin") {
-        return res.status(401).json({
-            success: false,
-            data: {},
-            message: "You don't have any role permission to access this API",
-        });
-    }
+export const listUploadedOpenAIFile = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<Response | undefined> => {
     try {
         const listUploadedFiles = await FineTuneService.listUploadedFiles();
         return res.status(200).json({
             success: true,
             data: { listUploadedFiles },
-            message: "Uploaded files found!",
+            message: 'Uploaded files found!'
         });
     } catch (err) {
         next(err);
     }
 };
 
-export const listFineTuneOpenAI = async (_req: Request, res: Response, next: NextFunction) => {
-    if (res.locals.role !== "admin") {
-        return res.status(401).json({
-            success: false,
-            data: {},
-            message: "You don't have any role permission to access this API",
-        });
-    }
+export const listFineTuneOpenAI = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<Response | undefined> => {
     try {
         const listFinetunes = await FineTuneService.listFinetunes();
         return res.status(200).json({
             success: true,
             data: { listFinetunes },
-            message: "List Fine tunes found!",
+            message: 'List Fine tunes found!'
         });
     } catch (err) {
         next(err);
     }
 };
 
-export const deleteFinetuneOpenAI = async (req: Request, res: Response, next: NextFunction) => {
-    if (res.locals.role !== "admin") {
-        return res.status(401).json({
-            success: false,
-            data: {},
-            message: "You don't have any role permission to access this API",
-        });
-    }
+export const deleteFinetuneOpenAI = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<Response | undefined> => {
     try {
-        if (!req.query.id || typeof req.query.id === "undefined") {
+        if (!req.query.id || typeof req.query.id === 'undefined') {
             return res.status(422).json({
                 success: false,
                 data: {},
-                message: "Fine tune id is required",
+                message: 'Fine tune id is required'
             });
         }
         const finetuneId = String(req.query.id);
@@ -108,43 +92,37 @@ export const deleteFinetuneOpenAI = async (req: Request, res: Response, next: Ne
         return res.status(200).json({
             success: true,
             data: { deleteFinetune },
-            message: "Fine tune has been deleted",
+            message: 'Fine tune has been deleted'
         });
     } catch (err) {
         next(err);
     }
 };
 
-export const reformatJson = async (_req: Request, res: Response) => {
-    if (res.locals.role !== "admin") {
-        return res.status(401).json({
-            success: false,
-            data: {},
-            message: "You don't have any role permission to access this API",
+export const reformatJson = async (_req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+    try {
+        const data = await FineTuneService.reformatJson();
+        return res.status(200).json({
+            success: true,
+            data,
+            message: 'success'
         });
+    } catch (err) {
+        next(err);
     }
-    const data = await FineTuneService.reformatJson();
-    return res.status(200).json({
-        success: true,
-        data,
-        message: "success",
-    });
 };
 
-export const getDetailFinetune = async (req: Request, res: Response, next: NextFunction) => {
-    if (res.locals.role !== "admin") {
-        return res.status(401).json({
-            success: false,
-            data: {},
-            message: "You don't have any role permission to access this API",
-        });
-    }
+export const getDetailFinetune = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<Response | undefined> => {
     try {
-        if (!req.query.id || typeof req.query.id === "undefined") {
+        if (!req.query.id || typeof req.query.id === 'undefined') {
             return res.status(422).json({
                 success: false,
                 data: {},
-                message: "Fine tune id is required",
+                message: 'Fine tune id is required'
             });
         }
         const finetuneId = String(req.query.id);
@@ -152,7 +130,7 @@ export const getDetailFinetune = async (req: Request, res: Response, next: NextF
         return res.status(200).json({
             success: true,
             data: { getDetailFinetune },
-            message: "List Fine tunes found!",
+            message: 'List Fine tunes found!'
         });
     } catch (err) {
         next(err);

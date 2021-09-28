@@ -1,16 +1,16 @@
-import { getConnection, getRepository } from "typeorm";
-import { Completion } from "./entity/Completion";
+import { getConnection, getRepository } from 'typeorm';
+import { Completion } from './entity/Completion';
 /**
  * Repository Methods
  */
 
-export const getAllCompletion = async (userId: string) => {
+export const getAllCompletion = async (userId: string): Promise<Completion[]> => {
     return await getRepository(Completion).find({
         where: { userId },
         cache: {
             id: `usercompletion-${userId}`,
-            milliseconds: 300000,
-        },
+            milliseconds: 300000
+        }
     });
 };
 
