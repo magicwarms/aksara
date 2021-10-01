@@ -1,15 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { isEmpty } from 'lodash';
 import { deleteFile } from '../../utilities/file';
-import { isCSV, queryFineTune } from './finetune.interface';
 
 import * as FineTuneService from './finetune.service';
 
-export const convert = async (
-    req: Request<unknown, unknown, isCSV, queryFineTune>,
-    res: Response,
-    next: NextFunction
-): Promise<Response | undefined> => {
+export const convert = async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
     try {
         const filePath = 'temp/' + req.file?.filename;
         if (req.file?.mimetype !== 'text/csv' && req.file?.mimetype !== 'application/octet-stream') {

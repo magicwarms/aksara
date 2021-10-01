@@ -24,7 +24,7 @@ import { StatusHistory } from '../credits/credit.enum';
  */
 
 const getAllPaymentMethodDuitku = async (amount: number): Promise<paymentMethod> => {
-    const endpoint: string = paymentConfig.endpointGetPaymentMethodUrl;
+    const endpoint: string | undefined = paymentConfig.endpointGetPaymentMethodUrl;
     const datetime = currentFormattedDateTime();
     const hashString = `${paymentConfig.merchantCode}${Number(amount)}${datetime}${paymentConfig.merchantKey}`;
     const getPaymentMethodDuitku = await axios({
@@ -52,7 +52,7 @@ export const getAllPaymentMethod = async (amount: number): Promise<paymentMethod
 };
 
 const requestTransactionDuitKu = async (data: transactionData) => {
-    const endpoint: string = paymentConfig.endpointRequestTransaction;
+    const endpoint: string | undefined = paymentConfig.endpointRequestTransaction;
     const requestTrxDuitku = await axios({
         url: endpoint,
         method: 'post',
@@ -68,7 +68,7 @@ const requestTransactionDuitKu = async (data: transactionData) => {
 };
 
 const checkTransactionDuitKu = async (data: { merchantCode: string; merchantOrderId: string; signature: string }) => {
-    const endpoint: string = paymentConfig.endpointCheckTransaction;
+    const endpoint: string | undefined = paymentConfig.endpointCheckTransaction;
     const checkTrxDuitku = await axios({
         url: endpoint,
         method: 'post',
@@ -89,11 +89,11 @@ export const storePayment = async (
 ): Promise<Payment | ValidationError[] | responsePayment> => {
     const transactionCode = `ORDER-${setNanoId()}`;
 
-    const merchantCodeData: string = paymentConfig.merchantCode;
-    const merchantKeyData: string = paymentConfig.merchantKey;
+    const merchantCodeData: string | undefined = paymentConfig.merchantCode;
+    const merchantKeyData: string | undefined = paymentConfig.merchantKey;
 
-    const returnUrl: string = paymentConfig.returnUrl;
-    const callbackUrl: string = paymentConfig.callbackUrl;
+    const returnUrl: string | undefined = paymentConfig.returnUrl;
+    const callbackUrl: string | undefined = paymentConfig.callbackUrl;
 
     const grandtotalPayment = Number(paymentData.amountCreditPrice);
     const orderDescription = `Payment for purchase ${paymentData.credits} credits`;
@@ -205,11 +205,11 @@ export const updatePaymentStatus = async (updatePaymentStatus: {
 };
 
 export const checkTransaction = async (transactionCode: string): Promise<responsePaymentStatus | string> => {
-    const merchantCodeData: string = paymentConfig.merchantCode;
-    const merchantKeyData: string = paymentConfig.merchantKey;
+    const merchantCodeData: string | undefined = paymentConfig.merchantCode;
+    const merchantKeyData: string | undefined = paymentConfig.merchantKey;
 
     const data = {
-        merchantCode: merchantCodeData,
+        merchantCode: merchantCodeData as string,
         merchantOrderId: transactionCode,
         signature: Md5.hashStr(`${merchantCodeData}${transactionCode}${merchantKeyData}`)
     };
