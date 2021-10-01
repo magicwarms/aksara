@@ -170,6 +170,7 @@ const startServer = () => {
  * Setup server connection here
  */
 const startServerCluster = async () => {
+    await createConnection();
     console.info('Production server mode started!');
     // Activate cluster for production mode
     if (cluster.isPrimary) {
@@ -185,7 +186,6 @@ const startServerCluster = async () => {
             }
         });
     } else {
-        await createConnection();
         startServer()
             .then()
             .catch((err) => console.error(err));
@@ -200,10 +200,6 @@ const startServerDevelopment = async () => {
         .then()
         .catch((err) => console.error(err));
 };
-
-/**
- * Setup database connection here
- */
 /**
  * Start server
  */
