@@ -36,7 +36,6 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): Re
 };
 
 export const verifyAdminAccess = (_req: Request, res: Response, next: NextFunction): Response | undefined => {
-    console.log(res.locals);
     if (res.locals.role !== 'admin') {
         return res.status(403).json({
             success: false,
