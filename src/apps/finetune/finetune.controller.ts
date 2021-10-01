@@ -1,9 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+import { isEmpty } from 'lodash';
 import { deleteFile } from '../../utilities/file';
+import { isCSV, queryFineTune } from './finetune.interface';
 
 import * as FineTuneService from './finetune.service';
 
-export const convert = async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+export const convert = async (
+    req: Request<unknown, unknown, isCSV, queryFineTune>,
+    res: Response,
+    next: NextFunction
+): Promise<Response | undefined> => {
     try {
         const filePath = 'temp/' + req.file?.filename;
         if (req.file?.mimetype !== 'text/csv' && req.file?.mimetype !== 'application/octet-stream') {
@@ -14,14 +20,14 @@ export const convert = async (req: Request, res: Response, next: NextFunction): 
                 message: 'Please upload csv file only'
             });
         }
-        if (typeof req.body.isCSV === 'undefined' || req.body.isCSV === null || req.body.isCSV === '') {
+        if (isEmpty(req.body.isCSV)) {
             return res.status(422).json({
                 success: false,
                 data: {},
                 message: 'CSV value is required'
             });
         }
-        const convertProcess = await FineTuneService.convertCsvToJsonLine(req);
+        const convertProcess = await FineTuneService.convertCsvToJsonLine({ body: req.body, file: req.file });
         if (!convertProcess) {
             return res.status(500).json({
                 success: false,

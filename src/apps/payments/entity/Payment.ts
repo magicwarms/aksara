@@ -1,64 +1,64 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 
-import { IsNotEmpty } from "class-validator";
-import { itemDetails, paymentMethod } from "../payment.interface";
+import { IsNotEmpty } from 'class-validator';
+import { itemDetails, storePaymentMethodData } from '../payment.interface';
 
 @Entity()
-@Index(["id", "userId"])
+@Index(['id', 'userId'])
 export class Payment {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn('uuid')
     id?: string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     @IsNotEmpty()
     userId!: string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     @IsNotEmpty()
     transactionCode!: string;
 
-    @Column("jsonb", { nullable: false })
+    @Column('jsonb', { nullable: false })
     @IsNotEmpty()
-    payment!: paymentMethod;
+    payment!: storePaymentMethodData;
 
-    @Column({ type: "numeric", nullable: false })
+    @Column({ type: 'numeric', nullable: false })
     @IsNotEmpty()
     amountCreditPrice!: number;
 
-    @Column({ type: "numeric", nullable: false })
+    @Column({ type: 'numeric', nullable: false })
     @IsNotEmpty()
     credits!: number;
 
-    @Column({ type: "numeric", nullable: false })
+    @Column({ type: 'numeric', nullable: false })
     @IsNotEmpty()
     fee!: number;
 
-    @Column({ type: "numeric", nullable: false })
+    @Column({ type: 'numeric', nullable: false })
     @IsNotEmpty()
     grandtotal!: number;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     @IsNotEmpty()
     orderDescription!: string;
 
-    @Column("jsonb", { nullable: false })
+    @Column('jsonb', { nullable: false })
     itemDetails!: itemDetails[];
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     @IsNotEmpty()
     referenceDuitKuId!: string;
 
-    @Column({ type: "varchar", width: 2, nullable: false })
+    @Column({ type: 'varchar', width: 2, nullable: false })
     @IsNotEmpty()
     status!: string;
 
-    @Column({ type: "varchar", width: 8, nullable: false })
+    @Column({ type: 'varchar', width: 8, nullable: false })
     @IsNotEmpty()
     statusMessage!: string;
 
-    @CreateDateColumn({ type: "timestamp with time zone" })
+    @CreateDateColumn({ type: 'timestamp with time zone' })
     createdDate?: Date;
 
-    @UpdateDateColumn({ type: "timestamp with time zone" })
+    @UpdateDateColumn({ type: 'timestamp with time zone' })
     updatedDate?: Date;
 }

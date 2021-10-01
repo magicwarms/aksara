@@ -1,25 +1,25 @@
-import { getRepository, UpdateResult } from "typeorm";
-import { FromTo } from "./entity/FromTo";
+import { getRepository, UpdateResult } from 'typeorm';
+import { FromTo } from './entity/FromTo';
 /**
  * Repository Methods
  */
 
-export const getAllFromTo = async (isActive: boolean, categoryId: string) => {
+export const getAllFromTo = async (isActive: boolean, categoryId: string): Promise<FromTo[]> => {
     return await getRepository(FromTo)
-        .createQueryBuilder("fromto")
-        .select(["fromto.id", "fromto.key", "fromto.name", "fromto.categories"])
-        .where("fromto.categories ::jsonb @> :categories", {
+        .createQueryBuilder('fromto')
+        .select(['fromto.id', 'fromto.key', 'fromto.name', 'fromto.categories'])
+        .where('fromto.categories ::jsonb @> :categories', {
             categories: JSON.stringify([
                 {
-                    id: categoryId,
-                },
-            ]),
+                    id: categoryId
+                }
+            ])
         })
-        .andWhere("fromto.isActive = :isActive", { isActive })
+        .andWhere('fromto.isActive = :isActive', { isActive })
         .getMany();
 };
 
-export const storeOrUpdateFromTo = async (data: FromTo) => {
+export const storeOrUpdateFromTo = async (data: FromTo): Promise<FromTo> => {
     return await getRepository(FromTo).save(data);
 };
 

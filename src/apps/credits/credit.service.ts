@@ -3,6 +3,7 @@
  */
 
 import { ValidationError } from 'class-validator';
+import { isEmpty } from 'lodash';
 import validation from '../../config/validation';
 
 import * as CreditRepository from './credit.repository';
@@ -13,7 +14,9 @@ import { CreditTransaction } from './entity/CreditTransaction';
  * Service Methods
  */
 export const getCreditUser = async (userId: string): Promise<Credit | undefined> => {
-    return await CreditRepository.getCreditUser(userId);
+    const getCreditUserData = await CreditRepository.getCreditUser(userId);
+    if (isEmpty(getCreditUserData)) throw new Error("Credit user can't empty");
+    return getCreditUserData;
 };
 
 export const storeOrUpdateCreditUser = async (data: Credit): Promise<Credit | ValidationError[]> => {

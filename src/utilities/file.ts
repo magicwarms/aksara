@@ -1,8 +1,8 @@
-import fs from "fs";
+import fs from 'fs';
 
-import logger from "../config/logger";
+import logger from '../config/logger';
 
-export const deleteFile = (filePath: string) => {
+export const deleteFile = (filePath: string): string | boolean => {
     if (fs.existsSync(filePath)) {
         fs.unlink(filePath, (err) => {
             if (err) {

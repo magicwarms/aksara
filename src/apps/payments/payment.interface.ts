@@ -1,4 +1,4 @@
-import { StatusMessage } from "./payment.enum";
+import { StatusMessage } from './payment.enum';
 
 export interface queryCheckTrxPayment {
     transactionCode: string;
@@ -52,6 +52,17 @@ export interface responsePayment {
 }
 
 export interface paymentMethod {
+    paymentFee: paymentFee[];
+}
+
+interface paymentFee {
+    paymentMethod: string;
+    paymentName: string;
+    paymentImage: string;
+    totalFee: number;
+}
+
+export interface storePaymentMethodData {
     paymentName: string;
     paymentMethod: string;
 }

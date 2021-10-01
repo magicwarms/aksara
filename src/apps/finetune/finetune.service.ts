@@ -18,7 +18,7 @@ export const listUploadedFiles = async (): Promise<unknown> => {
     return uploadedFiles.data;
 };
 
-const uploadFileToOpenAI = async (fileName: string, purpose: string) => {
+const uploadFileToOpenAI = async (fileName: string, purpose: string): Promise<{ data: { id: string } }> => {
     const formData = new FormData();
     formData.append('file', fs.createReadStream(process.cwd() + `/temp/${fileName}`));
     formData.append('purpose', purpose);
@@ -42,7 +42,7 @@ const createFineTuneToOpenAI = async (
     model: string,
     learning_rate_multiplier: number,
     prompt_loss_weight: number
-) => {
+): Promise<unknown> => {
     const createFineTune = await axios({
         url: 'https://api.openai.com/v1/fine-tunes',
         method: 'post',
@@ -61,7 +61,7 @@ const createFineTuneToOpenAI = async (
     return createFineTune;
 };
 
-export const listFinetunes = async () => {
+export const listFinetunes = async (): Promise<unknown> => {
     const ListFinetunes = await axios({
         method: 'get',
         url: 'https://api.openai.com/v1/fine-tunes',
@@ -72,7 +72,7 @@ export const listFinetunes = async () => {
     return ListFinetunes.data;
 };
 
-export const deleteFinetune = async (finetuneId: string) => {
+export const deleteFinetune = async (finetuneId: string): Promise<unknown> => {
     const deleteFinetune = await axios({
         method: 'delete',
         url: `https://api.openai.com/v1/models/${finetuneId}`,
@@ -83,7 +83,7 @@ export const deleteFinetune = async (finetuneId: string) => {
     return deleteFinetune.data;
 };
 
-export const getDetailFinetune = async (finetuneId: string) => {
+export const getDetailFinetune = async (finetuneId: string): Promise<unknown> => {
     const detailFinetune = await axios({
         method: 'get',
         url: `https://api.openai.com/v1/fine-tunes/${finetuneId}`,
@@ -97,39 +97,36 @@ export const getDetailFinetune = async (finetuneId: string) => {
 /**
  * Service Methods
  */
-export const convertCsvToJsonLine = async (data: any): Promise<any> => {
-    try {
-        let jsonLineFilename: string = data.file.filename;
-        if (data.body.isCSV) {
-            const csvFilePath: string = data.file.path;
-            const convertStart = await csvtojson({ ignoreColumns: /(sentiment)/ }).fromFile(csvFilePath);
-            if (!convertStart) return false;
-            const jsonData = convertStart.map((item) => {
-                return {
-                    prompt: `${item.prompt}\n\n###\n\n`,
-                    completion: ` ${item.completion}`
-                };
-            });
-            jsonLineFilename = data.file.filename.replace('.csv', '.jsonl');
-            const jsonLinePath = process.cwd() + `/temp/${jsonLineFilename}`;
+export const convertCsvToJsonLine = async (data: {
+    file: { filename: string; path: string };
+    body: { isCSV: boolean };
+}): Promise<boolean | undefined> => {
+    let jsonLineFilename: string = data.file.filename;
+    if (data.body.isCSV) {
+        const csvFilePath: string = data.file.path;
+        const convertStart = await csvtojson({ ignoreColumns: /(sentiment)/ }).fromFile(csvFilePath);
+        if (!convertStart) return false;
+        const jsonData = convertStart.map((item) => {
+            return {
+                prompt: `${item.prompt}\n\n###\n\n`,
+                completion: ` ${item.completion}`
+            };
+        });
+        jsonLineFilename = data.file.filename.replace('.csv', '.jsonl');
+        const jsonLinePath = process.cwd() + `/temp/${jsonLineFilename}`;
 
-            for (const itemObject of jsonData) {
-                await fs.promises.appendFile(jsonLinePath, JSON.stringify(itemObject) + '\n');
-            }
+        for (const itemObject of jsonData) {
+            await fs.promises.appendFile(jsonLinePath, JSON.stringify(itemObject) + '\n');
         }
-        const startUploadFiles = await uploadFileToOpenAI(jsonLineFilename, 'fine-tune');
-        if (!startUploadFiles) return false;
-
-        deleteFile('temp/' + jsonLineFilename);
-
-        const startCreateFineTune = await createFineTuneToOpenAI(startUploadFiles.data.id, 'babbage', 0.4, 1);
-        if (!startCreateFineTune) return false;
-
-        return true;
-    } catch (err) {
-    } finally {
-        deleteFile('temp/' + data.file.filename);
     }
+    Promise.all([deleteFile('temp/' + jsonLineFilename), deleteFile('temp/' + data.file.filename)]);
+    const startUploadFiles: { data: { id: string } } = await uploadFileToOpenAI(jsonLineFilename, 'fine-tune');
+    if (!startUploadFiles) return false;
+
+    const startCreateFineTune = await createFineTuneToOpenAI(startUploadFiles.data.id, 'babbage', 0.4, 1);
+    if (!startCreateFineTune) return false;
+
+    return true;
 };
 
 export const reformatJson = async (): Promise<boolean> => {

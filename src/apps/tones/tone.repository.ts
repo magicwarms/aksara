@@ -1,25 +1,25 @@
-import { getRepository, UpdateResult } from "typeorm";
-import { Tone } from "./entity/Tone";
+import { getRepository, UpdateResult } from 'typeorm';
+import { Tone } from './entity/Tone';
 /**
  * Repository Methods
  */
 
-export const getAllTone = async (isActive: boolean, categoryId: string) => {
+export const getAllTone = async (isActive: boolean, categoryId: string): Promise<Tone[]> => {
     return await getRepository(Tone)
-        .createQueryBuilder("tone")
+        .createQueryBuilder('tone')
         .select()
-        .where("tone.categories ::jsonb @> :categories", {
+        .where('tone.categories ::jsonb @> :categories', {
             categories: JSON.stringify([
                 {
-                    id: categoryId,
-                },
-            ]),
+                    id: categoryId
+                }
+            ])
         })
-        .andWhere("tone.isActive = :isActive", { isActive })
+        .andWhere('tone.isActive = :isActive', { isActive })
         .getMany();
 };
 
-export const storeOrUpdateTone = async (data: Tone) => {
+export const storeOrUpdateTone = async (data: Tone): Promise<Tone> => {
     return await getRepository(Tone).save(data);
 };
 

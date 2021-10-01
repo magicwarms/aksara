@@ -1,20 +1,20 @@
 /**
  * Data Model Interfaces
  */
-import { ValidationError } from "class-validator";
-import isEmpty from "lodash/isEmpty";
-import jwt from "jsonwebtoken";
+import { ValidationError } from 'class-validator';
+import isEmpty from 'lodash/isEmpty';
+import jwt from 'jsonwebtoken';
 
-import validation from "../../config/validation";
-import { JWT_SECRET } from "../../config/jwtsecret";
+import validation from '../../config/validation';
+import { JWT_SECRET } from '../../config/jwtsecret';
 
-import { User } from "./entity/User";
-import * as UserRepository from "./user.repository";
-import { storeOrUpdateCreditUser } from "../credits/credit.service";
+import { User } from './entity/User';
+import * as UserRepository from './user.repository';
+import { storeOrUpdateCreditUser } from '../credits/credit.service';
 
-import { UserAuthentification } from "./user.inteface";
-import { Roles } from "./user.enum";
-import { UpdateResult } from "typeorm";
+import { UserAuthentification } from './user.inteface';
+import { Roles } from './user.enum';
+import { UpdateResult } from 'typeorm';
 
 /**
  * Service Methods
@@ -67,12 +67,15 @@ export const loginOrRegisterCustomer = async (
         if (validateData.length > 0) return validateData;
 
         storeUser = await UserRepository.storeOrUpdateUser(user);
+        const userId = storeUser?.id ?? '';
+        if (isEmpty(userId)) throw new Error("User ID can't empty");
         // initiate credit user
-        storeOrUpdateCreditUser({ userId: storeUser?.id!, credit: 0 });
+        storeOrUpdateCreditUser({ userId, credit: 0 });
     }
-    const userId: string = isEmpty(checkEmailExist) ? storeUser?.id! : checkEmailExist?.id!;
-    const email: string = isEmpty(checkEmailExist) ? storeUser?.email! : checkEmailExist?.email!;
-    const roleUser: Roles = isEmpty(checkEmailExist) ? storeUser?.role! : checkEmailExist?.role!;
+    const userId: string | undefined = isEmpty(checkEmailExist) ? storeUser?.id : checkEmailExist?.id;
+    const email: string | undefined = isEmpty(checkEmailExist) ? storeUser?.email : checkEmailExist?.email;
+    const roleUser: Roles | undefined = isEmpty(checkEmailExist) ? storeUser?.role : checkEmailExist?.role;
+
     const fullname: string = isEmpty(checkEmailExist)
         ? `${storeUser?.firstname} ${storeUser?.lastname}`
         : `${checkEmailExist?.firstname} ${checkEmailExist?.lastname}`;
@@ -82,18 +85,18 @@ export const loginOrRegisterCustomer = async (
             id: userId,
             email,
             role: roleUser,
-            fullname,
+            fullname
         },
         JWT_SECRET,
-        { expiresIn: "30 days", algorithm: "HS512" }
+        { expiresIn: '30 days', algorithm: 'HS512' }
     );
     return {
-        tokenType: "Bearer",
-        expiresIn: "30 days",
+        tokenType: 'Bearer',
+        expiresIn: '30 days',
         token: generatedToken,
-        role: roleUser,
+        role: roleUser as Roles,
         id: userId,
-        email,
+        email
     };
 };
 
