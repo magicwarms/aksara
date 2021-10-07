@@ -12,5 +12,7 @@ const notificationRouter = express.Router();
  */
 
 notificationRouter.get('/', NotificationController.getAllNotification);
+notificationRouter.get('/read', NotificationController.updateReadNotification);
+notificationRouter.delete('/delete', NotificationController.deleteNotification);
 
 export default notificationRouter;

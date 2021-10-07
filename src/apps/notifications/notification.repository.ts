@@ -7,7 +7,10 @@ import { Notifications } from './entity/Notifications';
 export const getAllNotification = async (userId: string): Promise<Notifications[]> => {
     return await getRepository(Notifications).find({
         where: { userId },
-        select: ['id', 'userId', 'isRead', 'message', 'createdDate']
+        select: ['id', 'userId', 'isRead', 'message', 'createdDate'],
+        order: {
+            createdDate: 'DESC'
+        }
     });
 };
 
