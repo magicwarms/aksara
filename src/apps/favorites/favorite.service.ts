@@ -1,14 +1,15 @@
 /**
  * Data Model Interfaces
  */
-import { ValidationError } from "class-validator";
-import isEmpty from "lodash/isEmpty";
-import { UpdateResult } from "typeorm";
+import { ValidationError } from 'class-validator';
+import isEmpty from 'lodash/isEmpty';
+import { UpdateResult } from 'typeorm';
 
-import validation from "../../config/validation";
+import validation from '../../config/validation';
+import { storeNotification } from '../notifications/notification.service';
 
-import { Favorite } from "./entity/Favorite";
-import * as FavoriteRepository from "./favorite.repository";
+import { Favorite } from './entity/Favorite';
+import * as FavoriteRepository from './favorite.repository';
 
 /**
  * Service Methods
@@ -33,7 +34,11 @@ export const storeOrUpdateFavorite = async (
     if (validateData.length > 0) return validateData;
 
     const storeOrUpdateFavorite = await FavoriteRepository.storeOrUpdateFavorite(favorite);
-
+    storeNotification({
+        userId,
+        message: `You have favorited this completion ${favoriteData.completionMsg}`,
+        isRead: false
+    });
     return storeOrUpdateFavorite;
 };
 

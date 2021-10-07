@@ -15,6 +15,7 @@ import { storeOrUpdateCreditUser } from '../credits/credit.service';
 import { UserAuthentification } from './user.inteface';
 import { Roles } from './user.enum';
 import { UpdateResult } from 'typeorm';
+import { storeNotification } from '../notifications/notification.service';
 
 /**
  * Service Methods
@@ -70,7 +71,15 @@ export const loginOrRegisterCustomer = async (
         const userId = storeUser?.id ?? '';
         if (isEmpty(userId)) throw new Error("User ID can't empty");
         // initiate credit user
-        storeOrUpdateCreditUser({ userId, credit: 0 });
+        // and send in-app notification
+        Promise.all([
+            storeOrUpdateCreditUser({ userId, credit: 0 }),
+            storeNotification({
+                userId,
+                message: `Hi ${customerData.firstname}, welcome to Aksara!`,
+                isRead: false
+            })
+        ]);
     }
     const userId: string | undefined = isEmpty(checkEmailExist) ? storeUser?.id : checkEmailExist?.id;
     const email: string | undefined = isEmpty(checkEmailExist) ? storeUser?.email : checkEmailExist?.email;

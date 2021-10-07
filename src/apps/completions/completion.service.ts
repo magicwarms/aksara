@@ -9,6 +9,7 @@ import { Completion } from './entity/Completion';
 import * as CompletionRepository from './completion.repository';
 import { getCreditUser, storeCreditTransaction, storeOrUpdateCreditUser } from '../credits/credit.service';
 import { StatusHistory } from '../credits/credit.enum';
+import { storeNotification } from '../notifications/notification.service';
 
 /**
  * Service Methods
@@ -67,7 +68,12 @@ export const storeCompletion = async (
         };
         Promise.all([
             storeCreditTransaction(storeCreditTrx),
-            storeOrUpdateCreditUser({ userId, credit: remainingCredits })
+            storeOrUpdateCreditUser({ userId, credit: remainingCredits }),
+            storeNotification({
+                userId,
+                message: `You have used your credit of ${tokenUsage} in this prompt ${storeCompletion.prompt} on ${storeCompletion.createdDate}`,
+                isRead: false
+            })
         ]);
     }
     return storeCompletion;
