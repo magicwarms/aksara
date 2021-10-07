@@ -3,6 +3,7 @@
  */
 import { ValidationError } from 'class-validator';
 import isEmpty from 'lodash/isEmpty';
+import { UpdateResult } from 'typeorm';
 
 import validation from '../../config/validation';
 
@@ -18,7 +19,7 @@ export const getAllNotification = async (userId: string): Promise<Notifications[
     return getAllNotification;
 };
 
-export const storeOrUpdateNotification = async (
+export const storeNotification = async (
     notificationData: Notifications
 ): Promise<Notifications | ValidationError[]> => {
     const notification = new Notifications();
@@ -31,4 +32,22 @@ export const storeOrUpdateNotification = async (
     if (validateData.length > 0) return validateData;
 
     return await NotificationRepository.storeOrUpdateNotification(notification);
+};
+
+export const updateReadNotification = async (notificationData: {
+    notificationId: string;
+    isRead: boolean;
+}): Promise<Notifications | ValidationError[]> => {
+    const notification = new Notifications();
+    notification.id = notificationData.notificationId;
+    notification.isRead = notificationData.isRead;
+
+    const validateData = await validation(notification);
+    if (validateData.length > 0) return validateData;
+
+    return await NotificationRepository.storeOrUpdateNotification(notification);
+};
+
+export const deleteNotification = async (id: string): Promise<UpdateResult> => {
+    return await NotificationRepository.deleteNotification(id);
 };

@@ -18,6 +18,7 @@ import paymentConfig from '../../config/payment';
 import { StatusCode, StatusMessage } from './payment.enum';
 import { storeOrUpdateCreditUser, storeCreditTransaction, getCreditUser } from '../credits/credit.service';
 import { StatusHistory } from '../credits/credit.enum';
+import { storeNotification } from '../notifications/notification.service';
 
 /**
  * Service Methods
@@ -149,6 +150,14 @@ export const storePayment = async (
 
     const storePayment = await PaymentRepository.storePayment(payment);
     if (!storePayment) throw new Error('Store payment data error');
+
+    storeNotification({
+        userId: user.userId,
+        message:
+            'Thanks for purchase our credits, we are still waiting your payment, please do a payment before timeout! Thanks.',
+        isRead: false
+    });
+
     return { ...paymentRequest, transactionCode: storePayment.transactionCode };
 };
 
@@ -177,14 +186,20 @@ export const updatePaymentStatus = async (updatePaymentStatus: {
         if (checkStatus === StatusCode.SUCCESS) {
             //get credit user first
             const getCredit = await getCreditUser(userId);
+            const grandTotalCredit = Number(checkReferenceId?.credits) + Number(getCredit?.credit);
             const setCreditUser = await storeOrUpdateCreditUser({
                 userId: userId,
-                credit: Number(checkReferenceId?.credits) + Number(getCredit?.credit)
+                credit: grandTotalCredit
             });
             const userCredit = checkReferenceId?.credits ?? 0;
             if (userCredit === 0) throw new Error("Credit can't be zero");
 
             if (setCreditUser) {
+                storeNotification({
+                    userId,
+                    message: `Thanks for your payment, we have received your payment Rp. ${checkReferenceId?.grandtotal}. Thanks!`,
+                    isRead: false
+                });
                 const storeCreditTrx = {
                     userId: userId,
                     usage: 0,
@@ -192,7 +207,15 @@ export const updatePaymentStatus = async (updatePaymentStatus: {
                     remainingCredits: userCredit,
                     status: StatusHistory.ADDED
                 };
-                storeCreditTransaction(storeCreditTrx);
+
+                Promise.all([
+                    storeCreditTransaction(storeCreditTrx),
+                    storeNotification({
+                        userId,
+                        message: `We have added your credit ${userCredit} so, your total credit is ${grandTotalCredit}`,
+                        isRead: false
+                    })
+                ]);
             }
             // TO-DO
             // kirim notifikasi nanti disini wak

@@ -134,7 +134,7 @@ export const checkTransaction = async (
         return res.status(200).json({
             success: true,
             data: typeof checkTransaction === 'string' ? {} : checkTransaction,
-            message: typeof checkTransaction === 'string' ? checkTransaction : `Payment status successfully found`
+            message: typeof checkTransaction === 'string' ? checkTransaction : `Payment status has successfully found`
         });
     } catch (err) {
         next(err);

@@ -27,7 +27,7 @@ export const updatePaymentStatus = async (paymentUpdate: {
 export const getPaymentByReferenceId = async (reference: string): Promise<Payment | undefined> => {
     return await getRepository(Payment).findOne({
         where: { referenceDuitKuId: reference },
-        select: ['id', 'userId', 'credits', 'status', 'statusMessage']
+        select: ['id', 'userId', 'credits', 'status', 'statusMessage', 'grandtotal']
     });
 };
 
