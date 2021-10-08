@@ -33,7 +33,7 @@ if (!process.env.PORT) {
     process.exit(1);
 }
 
-const PORT: number = parseInt(process.env.PORT) || 9000;
+const PORT: number | string = process.env.PORT || 9000;
 const app: Application = express();
 
 /**
@@ -150,11 +150,12 @@ const setupCloseOnExit = (server: Server) => {
  * Server Activation
  */
 const startServer = () => {
-    const NodeAppInstanceEnvValue: number = parseInt(process.env.NODE_APP_INSTANCE as string, 10);
-    const nodeAppInstancePort =
-        process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
-            ? PORT + NodeAppInstanceEnvValue
-            : PORT;
+    // comment for heroku
+    // const NodeAppInstanceEnvValue: number = parseInt(process.env.NODE_APP_INSTANCE as string, 10);
+    const nodeAppInstancePort = PORT;
+    // process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
+    //     ? PORT + NodeAppInstanceEnvValue
+    //     : PORT;
     return new Promise((resolve) => {
         const server = app.listen(nodeAppInstancePort, () => {
             console.info(`⚡️[server]: Server is running at https://${process.env.APP_LINK}:${PORT} - ${currentTime}`);
