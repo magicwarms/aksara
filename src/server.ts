@@ -201,7 +201,7 @@ const startServerDevelopment = async () => {
         .catch((err) => console.error(err));
 };
 /**
- * Start server
+ * Start server now
  */
 if (process.env.NODE_ENV === 'development') {
     startServerDevelopment();
