@@ -28,12 +28,12 @@ const currentTime = new Date().toJSON().slice(0, 10).replace(/-/g, '/') + ' ' + 
 /**
  * App Variables
  */
-if (!process.env.APP_PORT) {
+if (!process.env.PORT) {
     console.log(`Server exit without set PORT`);
     process.exit(1);
 }
 
-const PORT: number = parseInt(process.env.APP_PORT as string, 10);
+const PORT: number = parseInt(process.env.PORT as string, 10);
 const app: Application = express();
 
 /**
