@@ -11,7 +11,7 @@
         "lint-and-fix": "eslint . --ext .ts --fix",
         "start": "set NODE_ENV=production && node dist/server.js",
         "build": "tsc -p ./",
-        "postinstall": "tsc -p ./",
+        "postinstall": "npm run build",
         "deploy": "git add . && git commit -m Heroku && git push heroku main"
     },
     "repository": {
