@@ -106,6 +106,7 @@ dist
 build
 # orm config file
 ormconfig.env
+ormconfig-backup.env
 ormconfig.json
 # temp folder
 temp
