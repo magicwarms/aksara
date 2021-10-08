@@ -3,11 +3,16 @@
     "version": "1.0.0",
     "description": "automate copywriter",
     "main": "server.js",
+    "engines": {
+        "node": "14.15.0"
+    },
     "scripts": {
         "dev": "ts-node-dev --respawn --pretty --transpile-only src/server.ts",
         "lint-and-fix": "eslint . --ext .ts --fix",
-        "start": "set NODE_ENV=production && node build/server.js",
-        "build": "tsc -p ./"
+        "start": "set NODE_ENV=production && node dist/server.js",
+        "build": "tsc -p ./",
+        "postinstall": "tsc -p ./",
+        "deploy": "git add . && git commit -m Heroku && git push heroku main"
     },
     "repository": {
         "type": "git",
